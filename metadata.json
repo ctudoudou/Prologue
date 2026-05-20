@@ -1,0 +1,6 @@
+{
+  "name": "AI Resume Builder",
+  "description": "An AI-powered resume builder with tailored templates and real-time preview.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
