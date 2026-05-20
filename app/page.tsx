@@ -5,6 +5,7 @@ import { useReactToPrint } from 'react-to-print';
 import { FormSection } from '@/components/FormSection';
 import { LandingPage } from '@/components/LandingPage';
 import { PreviewSection } from '@/components/PreviewSection';
+import { detectBrowserLanguage } from '@/lib/language';
 import { ResumeData, ResumeConfig } from '@/types/resume';
 import { Eye, Edit2 } from 'lucide-react';
 
@@ -114,7 +115,10 @@ export default function ResumeBuilder() {
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
   const [activeNav, setActiveNav] = useState('design');
   const [showLanding, setShowLanding] = useState(true);
-  const [landingLanguage, setLandingLanguage] = useState<ResumeConfig['language']>('en');
+  const [landingLanguage, setLandingLanguage] = useState<ResumeConfig['language']>(() => {
+    if (typeof navigator === 'undefined') return 'en';
+    return detectBrowserLanguage(navigator.language);
+  });
   
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
