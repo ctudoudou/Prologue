@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { FormSection } from '@/components/FormSection';
+import { LandingPage } from '@/components/LandingPage';
 import { PreviewSection } from '@/components/PreviewSection';
 import { ResumeData, ResumeConfig } from '@/types/resume';
 import { Eye, Edit2 } from 'lucide-react';
@@ -80,6 +81,23 @@ const initialConfig: ResumeConfig = {
   }
 };
 
+const sectionTitlesByLanguage: Record<ResumeConfig['language'], ResumeConfig['sectionTitles']> = {
+  en: {
+    summary: 'Profile',
+    experience: 'Experience',
+    education: 'Education',
+    projects: 'Projects',
+    skills: 'Skills',
+  },
+  zh: {
+    summary: '职业摘要',
+    experience: '工作经历',
+    education: '教育经历',
+    projects: '项目经历',
+    skills: '技能',
+  },
+};
+
 const navItems = [
   { id: 'design', label: 'Design' },
   { id: 'personal', label: 'Personal' },
@@ -95,9 +113,30 @@ export default function ResumeBuilder() {
   const [config, setConfig] = useState<ResumeConfig>(initialConfig);
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
   const [activeNav, setActiveNav] = useState('design');
+  const [showLanding, setShowLanding] = useState(true);
+  const [landingLanguage, setLandingLanguage] = useState<ResumeConfig['language']>('en');
   
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
+
+  const startBuilder = () => {
+    setConfig(current => ({
+      ...current,
+      language: landingLanguage,
+      sectionTitles: sectionTitlesByLanguage[landingLanguage],
+    }));
+    setShowLanding(false);
+  };
+
+  if (showLanding) {
+    return (
+      <LandingPage
+        language={landingLanguage}
+        onLanguageChange={setLandingLanguage}
+        onStart={startBuilder}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-[#F5F5F0] overflow-hidden font-sans text-[#1A1A1A]">
@@ -120,8 +159,19 @@ export default function ResumeBuilder() {
       {/* Left Configuration Panel */}
       <aside className={`w-full md:w-[600px] xl:w-[650px] h-full border-r border-[#D9D9D3] bg-white shadow-sm flex-col shrink-0 ${activeTab === 'edit' ? 'flex' : 'hidden md:flex'}`}>
         <header className="p-4 md:p-6 border-b border-[#F0F0EB] shrink-0 bg-white z-10">
-          <h1 className="text-[10px] md:text-xs tracking-[0.2em] uppercase font-semibold text-[#8C8C85] mb-1">Resume Engine</h1>
-          <p className="text-lg md:text-xl font-serif italic text-[#333]">Editorial Suite</p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-[10px] md:text-xs tracking-[0.2em] uppercase font-semibold text-[#8C8C85] mb-1">Resume Engine</h1>
+              <p className="text-lg md:text-xl font-serif italic text-[#333]">Editorial Suite</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowLanding(true)}
+              className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#8C8C85] transition-colors hover:text-[#1A1A1A]"
+            >
+              Intro
+            </button>
+          </div>
         </header>
 
         <div className="flex-1 overflow-hidden flex flex-row">
