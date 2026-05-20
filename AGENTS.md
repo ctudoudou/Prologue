@@ -18,7 +18,7 @@ This is a Next.js app generated from Google AI Studio and adapted into an editor
 
 Core stack:
 
-- Next.js 15 App Router
+- Next.js 16 App Router
 - React 19
 - TypeScript with `strict: true`
 - Tailwind CSS 4
@@ -45,8 +45,9 @@ Use npm; `package-lock.json` is present.
 - Start dev server: `npm run dev`
 - Lint: `npm run lint`
 - Production build: `npm run build`
+- Test: `npm run test`
 
-There is no test suite configured. For behavior changes, prefer `npm run lint` and `npm run build`; add targeted manual browser verification when UI, print, responsive layout, or AI flows are affected.
+For behavior changes, prefer `npm run test`, `npm run lint`, and `npm run build`; add targeted manual browser verification when UI, print, responsive layout, or AI flows are affected.
 
 ## Environment
 
@@ -108,6 +109,7 @@ The app reads this only on the server in `app/api/enhance/route.ts`. Do not expo
 Before finishing a code change, run the checks appropriate to the touched surface:
 
 - Type, API, or production behavior changed: `npm run build`
+- Prompt, markdown editing, or preview behavior changed: `npm run test`
 - Component or lint-sensitive code changed: `npm run lint`
 - UI layout changed: run the dev server and inspect desktop and mobile widths.
 - Print/export changed: verify the preview content still prints from the resume page only.
@@ -126,7 +128,6 @@ If a check cannot run because dependencies, network, or secrets are unavailable,
 
 ## Known Project Gaps
 
-- No automated tests are currently configured.
 - Most resume state is in-memory only; there is no persistence layer.
 - Template rendering is concentrated in one large file.
 - The project is not currently inside a git repository in this workspace.

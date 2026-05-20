@@ -5,7 +5,7 @@ import { useReactToPrint } from 'react-to-print';
 import { FormSection } from '@/components/FormSection';
 import { PreviewSection } from '@/components/PreviewSection';
 import { ResumeData, ResumeConfig } from '@/types/resume';
-import { Download, LayoutTemplate, Palette, Type, Eye, Edit2 } from 'lucide-react';
+import { Eye, Edit2 } from 'lucide-react';
 
 const initialData: ResumeData = {
   personalInfo: {

@@ -1,8 +1,31 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
+import { buildEnhancePrompt, validateEnhanceRequest } from "@/lib/enhance";
 
 export async function POST(req: NextRequest) {
   try {
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const validation = validateEnhanceRequest(body);
+    if (!validation.ok) {
+      return NextResponse.json(
+        { error: validation.error },
+        { status: validation.status }
+      );
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json(
+        { error: "AI service is not configured" },
+        { status: 500 }
+      );
+    }
+
     const ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
       httpOptions: {
@@ -12,24 +35,7 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    const body = await req.json();
-    const { text, fieldType } = body;
-
-    if (!text) {
-      return NextResponse.json({ error: "Text is required" }, { status: 400 });
-    }
-
-    let prompt = "";
-    if (fieldType === "summary") {
-      prompt = `Rewrite and enhance the following professional summary for a resume. Make it impactful, concise, and professional. 
-Do not add any preamble or conversational text. Output ONLY the improved summary:\n\n${text}`;
-    } else if (fieldType === "experience") {
-      prompt = `Rewrite and enhance the following job experience description for a resume. Use strong action verbs and make it result-oriented (e.g., using XYZ formula: "Accomplished [X] as measured by [Y], by doing [Z]"). Keep it concise and professional. Use bullet points if appropriate (dash -).
-Do not add any preamble or conversational text. Output ONLY the improved description:\n\n${text}`;
-    } else {
-      prompt = `Enhance the following text for a professional resume. Make it impactful and concise.
-Do not add any preamble or conversational text. Output ONLY the improved text:\n\n${text}`;
-    }
+    const prompt = buildEnhancePrompt(validation.text, validation.fieldType);
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",

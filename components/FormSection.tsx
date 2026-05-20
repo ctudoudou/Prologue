@@ -1,7 +1,8 @@
 import { ResumeData, ResumeConfig, Experience, Education, Project, CustomField } from '@/types/resume';
-import { Sparkles, Plus, Trash2, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
+import { Sparkles, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { MarkdownInput } from './MarkdownInput';
+import type { EnhanceFieldType } from '@/lib/enhance';
 
 interface FormSectionProps {
   activeNav: string;
@@ -10,6 +11,14 @@ interface FormSectionProps {
   config: ResumeConfig;
   setConfig: React.Dispatch<React.SetStateAction<ResumeConfig>>;
 }
+
+const templateOptions: ResumeConfig['template'][] = [
+  'modern',
+  'minimal',
+  'classic',
+  'creative',
+  'professional',
+];
 
 export function FormSection({ activeNav, data, setData, config, setConfig }: FormSectionProps) {
   const [enhancingInfo, setEnhancingInfo] = useState<{ field: string, id?: string } | null>(null);
@@ -42,7 +51,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig }: For
     updatePersonalInfo('customFields', fields.filter(f => f.id !== id));
   };
 
-  const handleEnhance = async (text: string, fieldType: string, fieldName: string, id?: string) => {
+  const handleEnhance = async (text: string, fieldType: EnhanceFieldType, fieldName: string, id?: string) => {
     if (!text.trim()) return;
     
     setEnhancingInfo({ field: fieldName, id });
@@ -56,14 +65,14 @@ export function FormSection({ activeNav, data, setData, config, setConfig }: For
       const resultData = await response.json();
       if (resultData.result) {
         if (fieldType === 'summary') {
-          setData({ ...data, summary: resultData.result });
+          setData(current => ({ ...current, summary: resultData.result }));
         } else if (fieldType === 'experience' && id) {
-          setData({
-            ...data,
-            experience: data.experience.map(exp => 
+          setData(current => ({
+            ...current,
+            experience: current.experience.map(exp => 
               exp.id === id ? { ...exp, description: resultData.result } : exp
             )
-          });
+          }));
         }
       }
     } catch (error) {
@@ -110,10 +119,10 @@ export function FormSection({ activeNav, data, setData, config, setConfig }: For
           <section>
             <label className="text-[10px] uppercase tracking-widest font-bold mb-4 block text-[#1A1A1A]">Design Template</label>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
-              {['modern', 'minimal', 'classic', 'creative', 'professional'].map((t) => (
+              {templateOptions.map((t) => (
                 <button
                   key={t}
-                  onClick={() => setConfig({ ...config, template: t as any })}
+                  onClick={() => setConfig({ ...config, template: t })}
                   className={`h-16 rounded-sm flex items-center justify-center text-[10px] uppercase tracking-widest cursor-pointer transition-colors ${
                     config.template === t
                       ? 'bg-[#1A1A1A] border-2 border-black text-white'

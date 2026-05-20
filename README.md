@@ -27,13 +27,14 @@ The project is built as a Next.js application and is designed to run locally or 
 
 ## Tech Stack
 
-- **Framework:** Next.js 15 App Router
+- **Framework:** Next.js 16 App Router
 - **UI:** React 19, Tailwind CSS 4
 - **Language:** TypeScript
 - **Icons:** lucide-react
 - **Markdown Rendering:** react-markdown
 - **Print Export:** react-to-print
 - **AI Integration:** @google/genai through a Next.js API route
+- **Testing:** Vitest, Testing Library, jsdom
 - **Tooling:** ESLint 9, PostCSS, npm
 
 ## Getting Started

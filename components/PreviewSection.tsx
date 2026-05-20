@@ -1,7 +1,7 @@
 import { ResumeData, ResumeConfig } from '@/types/resume';
 import React from 'react';
 import Markdown from 'react-markdown';
-import { Mail, Phone, MapPin, Github, Linkedin, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, GitBranch, LinkIcon, Globe, type LucideIcon } from 'lucide-react';
 
 const isHidden = (data: ResumeData, field: string) => data.personalInfo.hiddenFields?.includes(field);
 
@@ -39,7 +39,7 @@ export function PreviewSection({ contentRef, data, config }: PreviewSectionProps
 }
 
 // Helper for rendering contact fields with optional icons
-const ContactField = ({ icon: Icon, value, showIcon, link }: { icon: any, value: string, showIcon: boolean, link?: string }) => {
+const ContactField = ({ icon: Icon, value, showIcon, link }: { icon: LucideIcon, value: string, showIcon: boolean, link?: string }) => {
   if (!value) return null;
   const content = (
     <span className="flex items-center gap-1.5 break-all">
@@ -88,8 +88,8 @@ function ModernTemplate({ data, config }: { data: ResumeData, config: ResumeConf
               {!isHidden(data, 'phone') && <ContactField icon={Phone} value={data.personalInfo.phone} showIcon={showIcons} />}
               {!isHidden(data, 'location') && <ContactField icon={MapPin} value={data.personalInfo.location} showIcon={showIcons} />}
               {!isHidden(data, 'website') && <ContactField icon={Globe} value={data.personalInfo.website} showIcon={showIcons} />}
-              {!isHidden(data, 'github') && <ContactField icon={Github} value={data.personalInfo.github} showIcon={showIcons} />}
-              {!isHidden(data, 'linkedin') && <ContactField icon={Linkedin} value={data.personalInfo.linkedin} showIcon={showIcons} />}
+              {!isHidden(data, 'github') && <ContactField icon={GitBranch} value={data.personalInfo.github} showIcon={showIcons} />}
+              {!isHidden(data, 'linkedin') && <ContactField icon={LinkIcon} value={data.personalInfo.linkedin} showIcon={showIcons} />}
             </div>
           </section>
 
@@ -217,8 +217,8 @@ function ClassicTemplate({ data, config }: { data: ResumeData, config: ResumeCon
           {!isHidden(data, 'location') && <ContactField icon={MapPin} value={data.personalInfo.location} showIcon={showIcons} />}
         </div>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[13px] text-gray-600 mt-1">
-          {!isHidden(data, 'linkedin') && <ContactField icon={Linkedin} value={data.personalInfo.linkedin} showIcon={showIcons} />}
-          {!isHidden(data, 'github') && <ContactField icon={Github} value={data.personalInfo.github} showIcon={showIcons} />}
+          {!isHidden(data, 'linkedin') && <ContactField icon={LinkIcon} value={data.personalInfo.linkedin} showIcon={showIcons} />}
+          {!isHidden(data, 'github') && <ContactField icon={GitBranch} value={data.personalInfo.github} showIcon={showIcons} />}
           {!isHidden(data, 'website') && <ContactField icon={Globe} value={data.personalInfo.website} showIcon={showIcons} />}
         </div>
 
@@ -340,8 +340,8 @@ function MinimalTemplate({ data, config }: { data: ResumeData, config: ResumeCon
           </div>
           <div className="flex flex-col gap-1 items-end">
             {!isHidden(data, 'location') && <ContactField icon={MapPin} value={data.personalInfo.location} showIcon={showIcons} />}
-            {!isHidden(data, 'linkedin') && <ContactField icon={Linkedin} value={data.personalInfo.linkedin} showIcon={showIcons} />}
-            {!isHidden(data, 'github') && <ContactField icon={Github} value={data.personalInfo.github} showIcon={showIcons} />}
+            {!isHidden(data, 'linkedin') && <ContactField icon={LinkIcon} value={data.personalInfo.linkedin} showIcon={showIcons} />}
+            {!isHidden(data, 'github') && <ContactField icon={GitBranch} value={data.personalInfo.github} showIcon={showIcons} />}
           </div>
         </div>
       </div>
@@ -520,11 +520,11 @@ function CreativeTemplate({ data, config }: { data: ResumeData, config: ResumeCo
         <div className="space-y-10">
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: themeColor }}>
-               {sectionTitles.projects}
+               Links
             </h3>
             <div className="space-y-4">
-              {!isHidden(data, 'linkedin') && <ContactField icon={Linkedin} value={data.personalInfo.linkedin} showIcon={showIcons} link={data.personalInfo.linkedin} />}
-              {!isHidden(data, 'github') && <ContactField icon={Github} value={data.personalInfo.github} showIcon={showIcons} link={data.personalInfo.github} />}
+              {!isHidden(data, 'linkedin') && <ContactField icon={LinkIcon} value={data.personalInfo.linkedin} showIcon={showIcons} link={data.personalInfo.linkedin} />}
+              {!isHidden(data, 'github') && <ContactField icon={GitBranch} value={data.personalInfo.github} showIcon={showIcons} link={data.personalInfo.github} />}
               {data.personalInfo.customFields?.map(f => (
                 <div key={f.id} className="flex flex-col">
                   <span className="text-xs font-bold text-gray-400 uppercase">{f.label}</span>
@@ -588,8 +588,8 @@ function ProfessionalTemplate({ data, config }: { data: ResumeData, config: Resu
           {!isHidden(data, 'email') && <div className="flex justify-end"><ContactField icon={Mail} value={data.personalInfo.email} showIcon={showIcons} /></div>}
           {!isHidden(data, 'phone') && <div className="flex justify-end"><ContactField icon={Phone} value={data.personalInfo.phone} showIcon={showIcons} /></div>}
           {!isHidden(data, 'location') && <div className="flex justify-end"><ContactField icon={MapPin} value={data.personalInfo.location} showIcon={showIcons} /></div>}
-          {!isHidden(data, 'linkedin') && <div className="flex justify-end"><ContactField icon={Linkedin} value={data.personalInfo.linkedin} showIcon={showIcons} /></div>}
-          {!isHidden(data, 'github') && <div className="flex justify-end"><ContactField icon={Github} value={data.personalInfo.github} showIcon={showIcons} /></div>}
+          {!isHidden(data, 'linkedin') && <div className="flex justify-end"><ContactField icon={LinkIcon} value={data.personalInfo.linkedin} showIcon={showIcons} /></div>}
+          {!isHidden(data, 'github') && <div className="flex justify-end"><ContactField icon={GitBranch} value={data.personalInfo.github} showIcon={showIcons} /></div>}
         </div>
       </div>
 
