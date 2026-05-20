@@ -2,6 +2,10 @@ import { ResumeData, ResumeConfig, Experience, Education, Project, CustomField }
 import { Sparkles, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { MarkdownInput } from './MarkdownInput';
+import {
+  type AiConfig,
+  defaultModelForProvider,
+} from '@/lib/ai-config';
 import type { EnhanceFieldType } from '@/lib/enhance';
 
 interface FormSectionProps {
@@ -10,6 +14,8 @@ interface FormSectionProps {
   setData: React.Dispatch<React.SetStateAction<ResumeData>>;
   config: ResumeConfig;
   setConfig: React.Dispatch<React.SetStateAction<ResumeConfig>>;
+  aiConfig: AiConfig;
+  setAiConfig: React.Dispatch<React.SetStateAction<AiConfig>>;
 }
 
 const templateOptions: ResumeConfig['template'][] = [
@@ -20,7 +26,7 @@ const templateOptions: ResumeConfig['template'][] = [
   'professional',
 ];
 
-export function FormSection({ activeNav, data, setData, config, setConfig }: FormSectionProps) {
+export function FormSection({ activeNav, data, setData, config, setConfig, aiConfig, setAiConfig }: FormSectionProps) {
   const [enhancingInfo, setEnhancingInfo] = useState<{ field: string, id?: string } | null>(null);
 
   const updatePersonalInfo = (field: keyof typeof data.personalInfo, value: string | CustomField[] | string[]) => {
@@ -59,7 +65,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig }: For
       const response = await fetch('/api/enhance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, fieldType }),
+        body: JSON.stringify({ text, fieldType, aiConfig }),
       });
       
       const resultData = await response.json();
@@ -186,6 +192,52 @@ export function FormSection({ activeNav, data, setData, config, setConfig }: For
               >
                 Chinese
               </button>
+            </div>
+          </section>
+
+          <section>
+            <label className="text-[10px] uppercase tracking-widest font-bold mb-4 block text-[#1A1A1A]">AI Service</label>
+            <div className="space-y-4 bg-[#F9F9F7] border border-[#EBEBE6] rounded-lg p-4">
+              <div className="grid grid-cols-2 gap-2">
+                {(['openai', 'openrouter'] as const).map(provider => (
+                  <button
+                    key={provider}
+                    onClick={() => setAiConfig(current => ({
+                      ...current,
+                      provider,
+                      model:
+                        current.model === defaultModelForProvider(current.provider)
+                          ? defaultModelForProvider(provider)
+                          : current.model,
+                    }))}
+                    className={`py-3 text-[10px] uppercase tracking-widest border rounded-sm transition-colors ${
+                      aiConfig.provider === provider
+                        ? 'bg-[#1A1A1A] border-black text-white'
+                        : 'border-[#E5E5E0] text-[#8C8C85] hover:bg-white'
+                    }`}
+                  >
+                    {provider === 'openai' ? 'OpenAI' : 'OpenRouter'}
+                  </button>
+                ))}
+              </div>
+              <InputField
+                label="Model"
+                value={aiConfig.model}
+                onChange={value => setAiConfig(current => ({ ...current, model: value }))}
+              />
+              <div>
+                <label className="text-[10px] uppercase tracking-widest font-bold mb-1.5 block text-[#1A1A1A] opacity-80">API Key</label>
+                <input
+                  type="password"
+                  value={aiConfig.apiKey}
+                  onChange={event => setAiConfig(current => ({ ...current, apiKey: event.target.value }))}
+                  placeholder={aiConfig.provider === 'openai' ? 'sk-...' : 'sk-or-...'}
+                  className="w-full border-b border-[#D9D9D3] focus:border-black outline-none py-1 text-sm bg-transparent transition-colors"
+                />
+              </div>
+              <p className="text-[11px] leading-5 text-[#8C8C85]">
+                Stored in this browser session only. The key is sent with each AI request and is never saved by Prologue.
+              </p>
             </div>
           </section>
         </>

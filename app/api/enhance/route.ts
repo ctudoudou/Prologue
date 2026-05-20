@@ -1,5 +1,5 @@
-import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
+import { generateAiText, validateAiConfig } from "@/lib/ai-provider";
 import { buildEnhancePrompt, validateEnhanceRequest } from "@/lib/enhance";
 
 export async function POST(req: NextRequest) {
@@ -19,28 +19,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!process.env.GEMINI_API_KEY) {
+    const aiConfig = validateAiConfig(
+      typeof body === "object" && body !== null && "aiConfig" in body
+        ? body.aiConfig
+        : undefined
+    );
+    if (!aiConfig.ok) {
       return NextResponse.json(
-        { error: "AI service is not configured" },
-        { status: 500 }
+        { error: aiConfig.error },
+        { status: aiConfig.status }
       );
     }
 
-    const ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build',
-        }
-      }
-    });
-
     const prompt = buildEnhancePrompt(validation.text, validation.fieldType);
+    const response = await generateAiText(aiConfig.config, [
+      {
+        role: "system",
+        content: "You are a precise resume editor. Return only the requested resume text.",
+      },
+      { role: "user", content: prompt },
+    ]);
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-    });
+    if (!response.ok) {
+      return NextResponse.json({ error: response.error }, { status: 502 });
+    }
 
     return NextResponse.json({ result: response.text });
   } catch (error) {

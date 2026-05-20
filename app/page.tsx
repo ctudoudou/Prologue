@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { FormSection } from '@/components/FormSection';
 import { LandingPage } from '@/components/LandingPage';
 import { PreviewSection } from '@/components/PreviewSection';
+import {
+  type AiConfig,
+  loadSessionAiConfig,
+  saveSessionAiConfig,
+} from '@/lib/ai-config';
 import { detectBrowserLanguage } from '@/lib/language';
 import { ResumeData, ResumeConfig } from '@/types/resume';
 import { Eye, Edit2 } from 'lucide-react';
@@ -112,6 +117,10 @@ const navItems = [
 export default function ResumeBuilder() {
   const [data, setData] = useState<ResumeData>(initialData);
   const [config, setConfig] = useState<ResumeConfig>(initialConfig);
+  const [aiConfig, setAiConfig] = useState<AiConfig>(() => {
+    if (typeof sessionStorage === 'undefined') return loadSessionAiConfig();
+    return loadSessionAiConfig(sessionStorage);
+  });
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
   const [activeNav, setActiveNav] = useState('design');
   const [showLanding, setShowLanding] = useState(true);
@@ -122,6 +131,10 @@ export default function ResumeBuilder() {
   
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
+
+  useEffect(() => {
+    saveSessionAiConfig(aiConfig, sessionStorage);
+  }, [aiConfig]);
 
   const startBuilder = () => {
     setConfig(current => ({
@@ -197,7 +210,15 @@ export default function ResumeBuilder() {
 
           {/* Details Column */}
           <div className="flex-1 overflow-y-auto bg-white p-4 md:p-8">
-            <FormSection activeNav={activeNav} data={data} setData={setData} config={config} setConfig={setConfig} />
+            <FormSection
+              activeNav={activeNav}
+              data={data}
+              setData={setData}
+              config={config}
+              setConfig={setConfig}
+              aiConfig={aiConfig}
+              setAiConfig={setAiConfig}
+            />
           </div>
         </div>
 
