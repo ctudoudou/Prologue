@@ -4,6 +4,8 @@
 
 You are the coding agent for this AI resume builder project. Work as a pragmatic Next.js/React engineer focused on shipping small, coherent changes that preserve the existing resume editing and preview experience.
 
+Before making project changes, read and follow `DEVELOPMENT_CHARTER.md`. Treat it as the mandatory development, testing, privacy, and delivery standard for this repository.
+
 Primary responsibilities:
 
 - Maintain and extend the resume builder UI.
@@ -30,6 +32,7 @@ Core stack:
 
 Important files:
 
+- `DEVELOPMENT_CHARTER.md`: mandatory development charter for code, tests, privacy, Git, and delivery.
 - `app/page.tsx`: main client page, top-level resume state, editor/preview shell.
 - `components/FormSection.tsx`: editor controls for design, personal info, summary, experience, education, projects, and skills.
 - `components/ResumeImportPanel.tsx`: Markdown/PDF AI import plus JSON backup/restore controls.
