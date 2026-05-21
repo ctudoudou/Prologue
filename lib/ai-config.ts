@@ -1,6 +1,6 @@
 export const AI_CONFIG_STORAGE_KEY = 'prologue.aiConfig.v1';
 
-export const AI_PROVIDERS = ['openai', 'openrouter'] as const;
+export const AI_PROVIDERS = ['openai', 'openrouter', 'volcengine'] as const;
 
 export type AiProvider = (typeof AI_PROVIDERS)[number];
 
@@ -8,11 +8,19 @@ export interface AiConfig {
   provider: AiProvider;
   apiKey: string;
   model: string;
+  baseUrl?: string;
 }
 
 export const DEFAULT_AI_MODELS: Record<AiProvider, string> = {
   openai: 'gpt-4.1-mini',
   openrouter: 'openai/gpt-4.1-mini',
+  volcengine: 'doubao-seed-1-6-250615',
+};
+
+export const DEFAULT_AI_BASE_URLS: Record<AiProvider, string> = {
+  openai: 'https://api.openai.com/v1/chat/completions',
+  openrouter: 'https://openrouter.ai/api/v1/chat/completions',
+  volcengine: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
 };
 
 export const DEFAULT_AI_CONFIG: AiConfig = {
@@ -36,6 +44,10 @@ export function defaultModelForProvider(provider: AiProvider) {
   return DEFAULT_AI_MODELS[provider];
 }
 
+export function defaultBaseUrlForProvider(provider: AiProvider) {
+  return DEFAULT_AI_BASE_URLS[provider];
+}
+
 export function normalizeAiConfig(value: unknown): AiConfig {
   if (!isRecord(value)) return DEFAULT_AI_CONFIG;
 
@@ -45,8 +57,17 @@ export function normalizeAiConfig(value: unknown): AiConfig {
     typeof value.model === 'string' && value.model.trim()
       ? value.model
       : defaultModelForProvider(provider);
+  const baseUrl =
+    typeof value.baseUrl === 'string' && value.baseUrl.trim()
+      ? value.baseUrl
+      : undefined;
 
-  return { provider, apiKey, model };
+  return {
+    provider,
+    apiKey,
+    model,
+    ...(baseUrl ? { baseUrl } : {}),
+  };
 }
 
 export function loadSessionAiConfig(storage?: Storage | null): AiConfig {

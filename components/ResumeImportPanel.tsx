@@ -153,7 +153,7 @@ export function ResumeImportPanel({
 
         {!aiConfig.apiKey.trim() && (
           <p className="text-xs leading-5 text-[#8A4B20]">
-            Add an API key in Design / AI Service before AI import.
+            Add an API key in Config before AI import.
           </p>
         )}
 

@@ -1,4 +1,3 @@
-import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { PreviewSection } from './PreviewSection';
@@ -65,7 +64,6 @@ const baseConfig: ResumeConfig = {
 function renderPreview(config: Partial<ResumeConfig> = {}) {
   return render(
     <PreviewSection
-      contentRef={createRef<HTMLDivElement>()}
       data={baseData}
       config={{ ...baseConfig, ...config }}
     />

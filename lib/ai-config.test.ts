@@ -14,10 +14,24 @@ describe('ai config helpers', () => {
   });
 
   it('uses provider defaults when model is empty', () => {
-    expect(normalizeAiConfig({ provider: 'openrouter', apiKey: 'key', model: '' })).toEqual({
-      provider: 'openrouter',
+    expect(normalizeAiConfig({ provider: 'volcengine', apiKey: 'key', model: '' })).toEqual({
+      provider: 'volcengine',
       apiKey: 'key',
-      model: defaultModelForProvider('openrouter'),
+      model: defaultModelForProvider('volcengine'),
+    });
+  });
+
+  it('preserves custom OpenAI-compatible base URLs', () => {
+    expect(normalizeAiConfig({
+      provider: 'volcengine',
+      apiKey: 'key',
+      model: 'ep-test',
+      baseUrl: ' https://example.com/v1/chat/completions ',
+    })).toEqual({
+      provider: 'volcengine',
+      apiKey: 'key',
+      model: 'ep-test',
+      baseUrl: ' https://example.com/v1/chat/completions ',
     });
   });
 

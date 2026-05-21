@@ -79,7 +79,7 @@ const copy: Record<LandingLanguage, LandingCopy> = {
     kicker: 'Editorial resume builder',
     title: 'Prologue',
     headline: 'Turn a career record into a first chapter worth reading.',
-    body: 'Shape rough notes, shipped work, and project milestones into a composed resume with live print preview and AI-assisted prose. Free to use, open source, and designed to keep private resume data out of storage.',
+    body: 'Shape rough notes, shipped work, and project milestones into a composed resume with live A4 preview and AI-assisted prose. Free to use, open source, and designed to keep private resume data out of storage.',
     primaryCta: 'Start writing',
     secondaryCta: 'View source',
     proof: ['Free to use', 'No stored resume data', 'Open source audit'],
@@ -102,7 +102,7 @@ const copy: Record<LandingLanguage, LandingCopy> = {
       },
       {
         title: 'Compose',
-        body: 'Move through restrained templates while the A4 preview keeps spacing, hierarchy, and print output honest.',
+        body: 'Move through restrained templates while the A4 preview keeps spacing, hierarchy, and PDF output honest.',
       },
     ],
     rewriteEyebrow: 'Before and after',
@@ -149,7 +149,7 @@ const copy: Record<LandingLanguage, LandingCopy> = {
     kicker: '编辑式简历构建器',
     title: 'Prologue',
     headline: '把职业记录写成值得阅读的第一章。',
-    body: '将零散笔记、交付成果和项目里程碑整理成有叙事感的简历，并通过实时打印预览和 AI 润色完成表达。免费使用、完全开源，并且不会存储你的隐私简历数据。',
+    body: '将零散笔记、交付成果和项目里程碑整理成有叙事感的简历，并通过实时 A4 预览和 AI 润色完成表达。免费使用、完全开源，并且不会存储你的隐私简历数据。',
     primaryCta: '开始撰写',
     secondaryCta: '查看源码',
     proof: ['免费使用', '不存储简历隐私', '开源可审计'],
@@ -160,7 +160,7 @@ const copy: Record<LandingLanguage, LandingCopy> = {
     previewSections: ['职业摘要', '工作经历', '项目成果'],
     workflowEyebrow: '编辑方法',
     workflowTitle: '把工作经历整理成清晰叙事的写作空间。',
-    workflowBody: 'Prologue 让流程保持克制：收集事实，打磨语言，再回到页面上判断结构、层次和打印效果。',
+    workflowBody: 'Prologue 让流程保持克制：收集事实，打磨语言，再回到页面上判断结构、层次和 PDF 效果。',
     workflow: [
       {
         title: '收集',
@@ -172,7 +172,7 @@ const copy: Record<LandingLanguage, LandingCopy> = {
       },
       {
         title: '成稿',
-        body: '在克制的模板中切换，并通过 A4 预览校准间距、层级和打印输出。',
+        body: '在克制的模板中切换，并通过 A4 预览校准间距、层级和 PDF 输出。',
       },
     ],
     rewriteEyebrow: '润色前后',

@@ -61,6 +61,36 @@ describe('buildChatCompletionRequest', () => {
       'X-Title': 'Prologue',
     });
   });
+
+  it('builds a Volcengine Ark request', () => {
+    const request = buildChatCompletionRequest(
+      { provider: 'volcengine', apiKey: 'ark-test', model: 'doubao-test' },
+      [{ role: 'user', content: 'Improve this' }]
+    );
+
+    expect(request.url).toBe('https://ark.cn-beijing.volces.com/api/v3/chat/completions');
+    expect(request.init.headers).toMatchObject({
+      Authorization: 'Bearer ark-test',
+      'Content-Type': 'application/json',
+    });
+    expect(JSON.parse(request.init.body as string)).toMatchObject({
+      model: 'doubao-test',
+    });
+  });
+
+  it('uses a custom compatible base URL when provided', () => {
+    const request = buildChatCompletionRequest(
+      {
+        provider: 'volcengine',
+        apiKey: 'ark-test',
+        model: 'ep-test',
+        baseUrl: 'https://example.com/api/v3/chat/completions',
+      },
+      [{ role: 'user', content: 'Improve this' }]
+    );
+
+    expect(request.url).toBe('https://example.com/api/v3/chat/completions');
+  });
 });
 
 describe('generateAiText', () => {

@@ -8,7 +8,7 @@ Primary responsibilities:
 
 - Maintain and extend the resume builder UI.
 - Keep resume data, configuration, and preview rendering consistent.
-- Preserve the printable A4 resume output behavior.
+- Preserve the A4 resume preview and server-rendered PDF output behavior.
 - Keep OpenAI-compatible text enhancement and resume import reliable and isolated to API routes.
 - Verify changes with the lightest command set that meaningfully covers the touched code.
 
@@ -24,7 +24,6 @@ Core stack:
 - Tailwind CSS 4
 - `lucide-react` for icons
 - `react-markdown` for resume content rendering
-- `react-to-print` for browser print export
 - `playwright` for Node-runtime PDF streaming
 - `pdf-parse` for PDF resume text extraction
 - OpenAI-compatible chat completions for AI enhancement and import
@@ -34,16 +33,16 @@ Important files:
 - `app/page.tsx`: main client page, top-level resume state, editor/preview shell.
 - `components/FormSection.tsx`: editor controls for design, personal info, summary, experience, education, projects, and skills.
 - `components/ResumeImportPanel.tsx`: Markdown/PDF AI import plus JSON backup/restore controls.
-- `components/PreviewSection.tsx`: printable A4 preview and all resume templates.
+- `components/PreviewSection.tsx`: A4 preview and all resume templates.
 - `components/MarkdownInput.tsx`: markdown-aware textarea controls.
 - `app/api/enhance/route.ts`: AI endpoint for resume text enhancement.
 - `app/api/import/resume/route.ts`: Node endpoint for Markdown/PDF resume import through AI parsing.
 - `app/api/export/pdf/route.ts`: Node endpoint for Playwright PDF streaming.
 - `lib/ai-config.ts`: session-only client AI provider configuration helpers.
-- `lib/ai-provider.ts`: OpenAI/OpenRouter request validation and chat completion helper.
+- `lib/ai-provider.ts`: OpenAI/OpenRouter/Volcengine request validation and chat completion helper.
 - `lib/resume-backup.ts`: versioned JSON backup validation.
 - `lib/resume-import.ts`: AI import prompt, parsing, normalization, and preview summary helpers.
-- `lib/pdf-export.ts`: printable HTML rendering and PDF export payload validation.
+- `lib/pdf-export.ts`: PDF HTML rendering and PDF export payload validation.
 - `types/resume.ts`: shared resume data/config types.
 - `app/globals.css`: Tailwind import and markdown rendering styles.
 
@@ -57,14 +56,14 @@ Use npm; `package-lock.json` is present.
 - Production build: `npm run build`
 - Test: `npm run test`
 
-For behavior changes, prefer `npm run test`, `npm run lint`, and `npm run build`; add targeted manual browser verification when UI, print, responsive layout, or AI flows are affected.
+For behavior changes, prefer `npm run test`, `npm run lint`, and `npm run build`; add targeted manual browser verification when UI, PDF export, responsive layout, or AI flows are affected.
 
 ## AI Provider And Privacy
 
-AI features are configured in the editor under **Design / AI Service**.
+AI features are configured in the editor with the **Config** button.
 
-- Supported providers are `openai` and `openrouter`.
-- The browser stores the selected provider, API key, and model in `sessionStorage` under `prologue.aiConfig.v1`.
+- Supported providers are `openai`, `openrouter`, and `volcengine`.
+- The browser stores the selected provider, API key, model, and optional base URL in `sessionStorage` under `prologue.aiConfig.v1`.
 - API keys are sent to server routes only in the current request body. They must not be stored, logged, or moved to durable persistence.
 - Resume import content is transient request data. Do not log uploaded file contents or extracted text.
 - OpenAI-compatible requests are built in `lib/ai-provider.ts`; keep provider-specific endpoints and headers there.
@@ -81,15 +80,14 @@ AI features are configured in the editor under **Design / AI Service**.
 
 ## UI And Styling Rules
 
-- Match the existing editorial, print-oriented visual language: restrained colors, compact controls, strong typography, and clear split editor/preview workflow.
+- Match the existing editorial, document-oriented visual language: restrained colors, compact controls, strong typography, and clear split editor/preview workflow.
 - Use Tailwind utility classes consistently with the existing files.
 - Use `lucide-react` icons for controls when an icon is needed.
 - Keep controls keyboard-accessible where practical: use real `button`, `input`, and `textarea` elements.
 - Maintain responsive behavior for the mobile edit/preview tabs and the desktop side-by-side layout.
 - Preserve A4 preview dimensions: the resume page is rendered at `210mm` width and at least `297mm` height.
 - Be careful with long user-entered text, URLs, and markdown so preview content wraps instead of breaking the layout.
-- If changing browser print behavior, verify that `react-to-print` still targets `contentRef`.
-- If changing cloud PDF behavior, keep `app/api/export/pdf/route.ts` on the Node runtime and preserve the browser print fallback.
+- If changing cloud PDF behavior, keep `app/api/export/pdf/route.ts` on the Node runtime and preserve `Content-Type` / `Content-Disposition` download headers.
 
 ## TypeScript And React Rules
 
@@ -125,9 +123,9 @@ Before finishing a code change, run the checks appropriate to the touched surfac
 - Prompt, markdown editing, or preview behavior changed: `npm run test`
 - Component or lint-sensitive code changed: `npm run lint`
 - UI layout changed: run the dev server and inspect desktop and mobile widths.
-- Print/export changed: verify the preview content still prints from the resume page only.
+- PDF export changed: verify the preview content still maps cleanly to the streamed PDF output.
 - AI route changed: verify invalid request bodies return `400` and valid requests reach the expected JSON shape with a configured session provider.
-- AI provider helper changed: cover OpenAI/OpenRouter endpoint, model, and header selection in tests.
+- AI provider helper changed: cover OpenAI/OpenRouter/Volcengine endpoint, model, base URL, and header selection in tests.
 - Import/backup behavior changed: cover preview/replace behavior and invalid JSON rejection.
 - PDF export changed: cover response headers where feasible, then run `npm run build`.
 

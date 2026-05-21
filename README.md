@@ -10,19 +10,19 @@ Powered by the deep comprehension of advanced language models like Claude or Qwe
 
 ## Overview
 
-Prologue is an AI-assisted resume builder focused on editorial presentation, structured resume editing, and polished printable output. It combines a form-based resume editor with a live A4 preview, multiple visual templates, markdown-friendly content fields, and server-side AI enhancement for professional summaries and experience descriptions.
+Prologue is an AI-assisted resume builder focused on editorial presentation, structured resume editing, and polished PDF output. It combines a form-based resume editor with a live A4 preview, multiple visual templates, markdown-friendly content fields, and server-side AI enhancement for professional summaries and experience descriptions.
 
 The project is built as a Next.js application and is designed to run locally or be deployed as a standalone web app.
 
 ## Features
 
 - Live resume editor with sections for personal details, summary, experience, education, projects, and skills.
-- Real-time A4 resume preview with browser print and server-rendered PDF export support.
+- Real-time A4 resume preview with server-rendered PDF export support.
 - Multiple resume templates: modern, minimal, classic, creative, and professional.
 - Theme color, typography, language, icon visibility, section title, and section visibility controls.
 - Markdown editing for long-form resume content.
 - Custom personal information fields and optional hidden contact fields.
-- OpenAI-compatible AI text enhancement through OpenAI or OpenRouter.
+- OpenAI-compatible AI text enhancement through OpenAI, OpenRouter, or Volcengine Ark.
 - AI-assisted Markdown and PDF resume import with preview before replacing the current resume.
 - Versioned JSON backup and restore that works locally without an AI key.
 - Responsive layout with mobile edit/preview switching and desktop side-by-side workflow.
@@ -34,7 +34,7 @@ The project is built as a Next.js application and is designed to run locally or 
 - **Language:** TypeScript
 - **Icons:** lucide-react
 - **Markdown Rendering:** react-markdown
-- **Print Export:** react-to-print, Playwright for Node PDF streaming
+- **PDF Export:** Playwright for Node PDF streaming
 - **AI Integration:** OpenAI-compatible chat completions through Next.js API routes
 - **Resume Import:** pdf-parse for PDF text extraction
 - **Testing:** Vitest, Testing Library, jsdom
@@ -46,7 +46,7 @@ The project is built as a Next.js application and is designed to run locally or 
 
 - Node.js
 - npm
-- Optional OpenAI or OpenRouter API key for AI enhancement and AI import features
+- Optional OpenAI, OpenRouter, or Volcengine Ark API key for AI enhancement and AI import features
 
 ### Installation
 
@@ -56,12 +56,13 @@ npm install
 
 ### AI Provider Setup
 
-Open the editor, go to **Design / AI Service**, choose OpenAI or OpenRouter, and enter an API key and model name. The key is stored only in browser `sessionStorage` under `prologue.aiConfig.v1`; it is sent to the server only for the current request and is never stored by the app.
+Open the editor, choose **Config**, select OpenAI, OpenRouter, or Volcengine, and enter an API key, model name, and compatible chat completions base URL. The key is stored only in browser `sessionStorage` under `prologue.aiConfig.v1`; it is sent to the server only for the current request and is never stored by the app.
 
 Default model values:
 
 - OpenAI: `gpt-4.1-mini`
 - OpenRouter: `openai/gpt-4.1-mini`
+- Volcengine: `doubao-seed-1-6-250615`
 
 ### Development
 
@@ -111,9 +112,9 @@ AI import always shows a summary preview before replacing the current resume. AP
 
 ## PDF Export
 
-The editor keeps the browser print export as the universal fallback. The **PDF** button calls `app/api/export/pdf/route.ts`, which uses a Node runtime and Playwright to stream `application/pdf` bytes with a download filename.
+The **PDF** button calls `app/api/export/pdf/route.ts`, which uses a Node runtime and Playwright to stream `application/pdf` bytes with a download filename.
 
-This route requires a Node/Chromium-capable deployment. Cloudflare Worker deployments should keep using browser print unless you attach a separate Node PDF service.
+This route requires a Node/Chromium-capable deployment. Cloudflare Worker deployments need a separate Node PDF service for this export path.
 
 ## License
 

@@ -6,12 +6,11 @@ import { Mail, Phone, MapPin, GitBranch, LinkIcon, Globe, type LucideIcon } from
 const isHidden = (data: ResumeData, field: string) => data.personalInfo.hiddenFields?.includes(field);
 
 interface PreviewSectionProps {
-  contentRef: React.RefObject<HTMLDivElement | null>;
   data: ResumeData;
   config: ResumeConfig;
 }
 
-export function PreviewSection({ contentRef, data, config }: PreviewSectionProps) {
+export function PreviewSection({ data, config }: PreviewSectionProps) {
   const fontClass = config.fontFamily.includes('Noto') ? '' : config.fontFamily;
   const fontStyle = config.fontFamily.includes('Noto') ? { fontFamily: config.fontFamily } : {};
 
@@ -21,8 +20,7 @@ export function PreviewSection({ contentRef, data, config }: PreviewSectionProps
       style={{ width: '210mm', minHeight: '297mm' }}
     >
       <div 
-        ref={contentRef}
-        className={`w-full h-full bg-white print:m-0 print:p-0 ${fontClass} relative z-10 flex flex-col`}
+        className={`w-full h-full bg-white ${fontClass} relative z-10 flex flex-col`}
         style={fontStyle}
       >
         {config.template === 'modern' && <ModernTemplate data={data} config={config} />}

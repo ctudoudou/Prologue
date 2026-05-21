@@ -1,6 +1,7 @@
 import {
   type AiConfig,
   type AiProvider,
+  defaultBaseUrlForProvider,
   defaultModelForProvider,
   isAiProvider,
 } from './ai-config';
@@ -25,12 +26,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function endpointForProvider(provider: AiProvider) {
-  if (provider === 'openrouter') {
-    return 'https://openrouter.ai/api/v1/chat/completions';
+function endpointForProvider(provider: AiProvider, baseUrl?: string) {
+  if (baseUrl?.trim()) {
+    return baseUrl.trim();
   }
 
-  return 'https://api.openai.com/v1/chat/completions';
+  return defaultBaseUrlForProvider(provider);
 }
 
 export function validateAiConfig(value: unknown): AiConfigValidation {
@@ -50,6 +51,10 @@ export function validateAiConfig(value: unknown): AiConfigValidation {
     typeof value.model === 'string' && value.model.trim()
       ? value.model.trim()
       : defaultModelForProvider(value.provider);
+  const baseUrl =
+    typeof value.baseUrl === 'string' && value.baseUrl.trim()
+      ? value.baseUrl.trim()
+      : undefined;
 
   return {
     ok: true,
@@ -57,6 +62,7 @@ export function validateAiConfig(value: unknown): AiConfigValidation {
       provider: value.provider,
       apiKey: value.apiKey.trim(),
       model,
+      ...(baseUrl ? { baseUrl } : {}),
     },
   };
 }
@@ -66,7 +72,7 @@ export function buildChatCompletionRequest(
   messages: ChatMessage[]
 ) {
   return {
-    url: endpointForProvider(config.provider),
+    url: endpointForProvider(config.provider, config.baseUrl),
     init: {
       method: 'POST',
       headers: {

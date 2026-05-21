@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { useReactToPrint } from 'react-to-print';
+import { useEffect, useState } from 'react';
+import { AiConfigPanel } from '@/components/AiConfigPanel';
 import { FormSection } from '@/components/FormSection';
 import { LandingPage } from '@/components/LandingPage';
 import { PreviewSection } from '@/components/PreviewSection';
@@ -13,7 +13,7 @@ import {
 } from '@/lib/ai-config';
 import { detectBrowserLanguage } from '@/lib/language';
 import { ResumeData, ResumeConfig } from '@/types/resume';
-import { Download, Eye, Edit2, FileUp, Printer } from 'lucide-react';
+import { Download, Eye, Edit2, FileUp, Settings } from 'lucide-react';
 
 const initialData: ResumeData = {
   personalInfo: {
@@ -125,6 +125,7 @@ export default function ResumeBuilder() {
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
   const [activeNav, setActiveNav] = useState('design');
   const [showImportPanel, setShowImportPanel] = useState(false);
+  const [showAiConfigPanel, setShowAiConfigPanel] = useState(false);
   const [isCloudExporting, setIsCloudExporting] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const [landingLanguage, setLandingLanguage] = useState<ResumeConfig['language']>(() => {
@@ -132,9 +133,6 @@ export default function ResumeBuilder() {
     return detectBrowserLanguage(navigator.language);
   });
   
-  const contentRef = useRef<HTMLDivElement>(null);
-  const reactToPrintFn = useReactToPrint({ contentRef });
-
   useEffect(() => {
     saveSessionAiConfig(aiConfig, sessionStorage);
   }, [aiConfig]);
@@ -169,7 +167,7 @@ export default function ResumeBuilder() {
       anchor.click();
       URL.revokeObjectURL(url);
     } catch {
-      reactToPrintFn();
+      window.alert('Server PDF export failed. This deployment needs a Node/Chromium-capable PDF runtime.');
     } finally {
       setIsCloudExporting(false);
     }
@@ -247,7 +245,6 @@ export default function ResumeBuilder() {
               config={config}
               setConfig={setConfig}
               aiConfig={aiConfig}
-              setAiConfig={setAiConfig}
             />
           </div>
         </div>
@@ -266,20 +263,34 @@ export default function ResumeBuilder() {
           />
         )}
 
+        {showAiConfigPanel && (
+          <AiConfigPanel
+            aiConfig={aiConfig}
+            setAiConfig={setAiConfig}
+            onClose={() => setShowAiConfigPanel(false)}
+          />
+        )}
+
         <footer className="p-4 md:p-6 bg-[#F9F9F7] border-t border-[#F0F0EB] flex gap-3 shrink-0">
           <button
             type="button"
-            onClick={() => setShowImportPanel(current => !current)}
+            onClick={() => {
+              setShowAiConfigPanel(current => !current);
+              setShowImportPanel(false);
+            }}
             className="flex-1 py-3 border border-black text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-[#1A1A1A] hover:text-white transition-colors flex items-center justify-center gap-2"
           >
-            <FileUp size={14} /> Import
+            <Settings size={14} /> Config
           </button>
           <button
             type="button"
-            onClick={() => reactToPrintFn()}
+            onClick={() => {
+              setShowImportPanel(current => !current);
+              setShowAiConfigPanel(false);
+            }}
             className="flex-1 py-3 border border-black text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-[#1A1A1A] hover:text-white transition-colors flex items-center justify-center gap-2"
           >
-            <Printer size={14} /> Print
+            <FileUp size={14} /> Import
           </button>
           <button
             type="button"
@@ -297,7 +308,7 @@ export default function ResumeBuilder() {
         <div className="absolute inset-0 bg-[#E6E6E1] z-0 pointer-events-none"></div>
         <div className="w-full flex justify-center py-4 md:py-0 z-10">
           <div className="scale-[0.45] sm:scale-[0.6] md:scale-75 xl:scale-95 2xl:scale-100 transform origin-top transition-transform shrink-0">
-            <PreviewSection contentRef={contentRef} data={data} config={config} />
+            <PreviewSection data={data} config={config} />
           </div>
         </div>
       </main>
