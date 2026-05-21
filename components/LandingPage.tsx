@@ -1,4 +1,5 @@
 import type { ResumeConfig } from '@/types/resume';
+import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import {
   ArrowRight,
   Code2,
@@ -212,6 +213,146 @@ const copy: Record<LandingLanguage, LandingCopy> = {
     finalBody: '从示例简历开始，替换成你的真实经历，让页面告诉你哪些地方还需要继续编辑。',
     finalCta: '打开编辑器',
   },
+  ja: {
+    languageLabel: '言語',
+    nav: ['方法', '信頼', 'テンプレート'],
+    githubLabel: 'GitHub',
+    kicker: '編集型履歴書ビルダー',
+    title: 'Prologue',
+    headline: '職務経歴を、読まれる第一章へ。',
+    body: 'ラフなメモ、成果、プロジェクトの節目を、A4 プレビューと AI 支援で整った履歴書へ。無料で使え、オープンソースで、個人情報を保存しない設計です。',
+    primaryCta: '書き始める',
+    secondaryCta: 'ソースを見る',
+    proof: ['無料で利用', '履歴書データを保存しない', 'オープンソースで監査可能'],
+    marginNotes: ['下書き', '改善', '構成'],
+    previewName: 'Jane Doe',
+    previewRole: 'Senior Software Engineer',
+    previewSummary: 'Architected resilient product systems, mentored teams, and translated complex engineering work into measurable outcomes.',
+    previewSections: ['プロフィール', '職務経歴', 'プロジェクト'],
+    workflowEyebrow: '編集の流れ',
+    workflowTitle: '仕事の記録を読みやすいストーリーへ整える場所。',
+    workflowBody: 'Prologue は、事実を集め、言葉を磨き、ページ上で構成を確認するという狭く意図的な流れを保ちます。',
+    workflow: [
+      {
+        title: '収集',
+        body: '役割、提供したシステム、成果、リンク、成長を示す具体的な出来事を入力します。',
+      },
+      {
+        title: '改善',
+        body: 'ライティングアシスタントが粗いメモを明確で成果重視の履歴書表現へ圧縮します。',
+      },
+      {
+        title: '構成',
+        body: '落ち着いたテンプレートを切り替えながら、A4 プレビューで余白、階層、PDF 出力を確認します。',
+      },
+    ],
+    rewriteEyebrow: 'Before / After',
+    rewriteTitle: 'ノイズを減らし、要点を強く。',
+    beforeLabel: 'ラフメモ',
+    afterLabel: 'Prologue の改善',
+    beforeText: 'バックエンドを担当し、API を少し速くした。同僚を助け、本番問題も修正した。',
+    afterText: 'バックエンドのデータフローを再設計して API 応答速度を改善し、本番障害対応でチームメンバーを支援しました。',
+    trustEyebrow: '信頼の設計',
+    trustTitle: '無料、プライベート、コードは検証可能。',
+    trustBody: '履歴書は現在のブラウザーセッション内で編集されます。Prologue はアカウント、データベース、追跡プロファイル、隠れた保存領域を追加しません。',
+    trust: [
+      {
+        title: '無料で利用',
+        body: '主要な履歴書作成機能は無料です。エディターを有料壁の後ろに置きません。',
+      },
+      {
+        title: '個人履歴書を保存しない',
+        body: '履歴書内容はセッション中のローカル状態に留まり、ユーザーの個人データをデータベースへ永続化しません。',
+      },
+      {
+        title: '完全にオープンソース',
+        body: 'コードは GitHub で公開され、データ処理、AI 呼び出し、ビルド設定を誰でも確認できます。',
+      },
+    ],
+    templatesEyebrow: 'テンプレートの表情',
+    templatesTitle: '同じ経験を、五つのトーンで。',
+    templatesBody: 'すべてのレイアウトは同じデータモデルを共有するため、構造は保ったまま視覚的な声だけを変えられます。',
+    templates: [
+      { name: 'Modern', tone: '編集的でバランスがよい' },
+      { name: 'Minimal', tone: '静かで正確' },
+      { name: 'Classic', tone: 'フォーマルで親しみやすい' },
+      { name: 'Creative', tone: '表現力がありつつ抑制的' },
+      { name: 'Professional', tone: '密度が高く職業的' },
+    ],
+    finalTitle: 'より強い一ページ目から始める。',
+    finalBody: 'サンプル履歴書から始め、自分の経験に置き換え、ページを見ながら改善点を判断できます。',
+    finalCta: 'エディターを開く',
+  },
+  ko: {
+    languageLabel: '언어',
+    nav: ['방법', '신뢰', '템플릿'],
+    githubLabel: 'GitHub',
+    kicker: '편집형 이력서 빌더',
+    title: 'Prologue',
+    headline: '경력 기록을 읽히는 첫 장으로 바꾸세요.',
+    body: '거친 메모, 출시한 작업, 프로젝트 이정표를 실시간 A4 미리보기와 AI 문장 개선으로 정돈된 이력서로 만듭니다. 무료이며 오픈소스이고 개인 이력서 데이터를 저장하지 않도록 설계했습니다.',
+    primaryCta: '작성 시작',
+    secondaryCta: '소스 보기',
+    proof: ['무료 사용', '이력서 데이터 미저장', '오픈소스 감사 가능'],
+    marginNotes: ['초안', '개선', '구성'],
+    previewName: 'Jane Doe',
+    previewRole: 'Senior Software Engineer',
+    previewSummary: 'Architected resilient product systems, mentored teams, and translated complex engineering work into measurable outcomes.',
+    previewSections: ['프로필', '경력', '프로젝트'],
+    workflowEyebrow: '편집 방식',
+    workflowTitle: '업무 기록을 명확한 이야기로 정리하는 공간.',
+    workflowBody: 'Prologue는 사실을 모으고, 문장을 다듬고, 페이지에서 결과를 판단하는 좁고 의도적인 흐름을 유지합니다.',
+    workflow: [
+      {
+        title: '수집',
+        body: '역할, 출시한 시스템, 성과, 링크, 성장의 증거가 되는 구체적 순간을 입력합니다.',
+      },
+      {
+        title: '개선',
+        body: '작성 도우미가 거친 메모를 명확하고 결과 중심적인 이력서 문장으로 압축합니다.',
+      },
+      {
+        title: '구성',
+        body: '절제된 템플릿을 전환하며 A4 미리보기로 간격, 계층, PDF 출력을 확인합니다.',
+      },
+    ],
+    rewriteEyebrow: '전후 비교',
+    rewriteTitle: '소음을 줄이고 신호를 키웁니다.',
+    beforeLabel: '거친 메모',
+    afterLabel: 'Prologue 개선',
+    beforeText: '백엔드를 작업했고 API를 더 빠르게 만들었다. 동료를 도왔고 운영 문제도 고쳤다.',
+    afterText: '백엔드 데이터 흐름을 재설계해 API 응답 속도를 개선하고, 운영 장애 대응 과정에서 팀원을 지원했습니다.',
+    trustEyebrow: '신뢰 설계',
+    trustTitle: '무료, 비공개, 코드 검토 가능.',
+    trustBody: '이력서는 현재 브라우저 세션에서 편집됩니다. Prologue는 계정, 데이터베이스, 추적 프로필 또는 개인 이력서 콘텐츠를 위한 숨은 저장소를 추가하지 않습니다.',
+    trust: [
+      {
+        title: '무료 사용',
+        body: '핵심 이력서 빌더는 무료입니다. 에디터를 유료 장벽 뒤에 두지 않습니다.',
+      },
+      {
+        title: '개인 이력서 미저장',
+        body: '이력서 내용은 세션 중 로컬 앱 상태에 머물며 사용자 개인정보를 데이터베이스에 영구 저장하지 않습니다.',
+      },
+      {
+        title: '완전 오픈소스',
+        body: '코드는 GitHub에 공개되어 데이터 처리, AI 호출, 빌드 구성을 누구나 검토할 수 있습니다.',
+      },
+    ],
+    templatesEyebrow: '템플릿 언어',
+    templatesTitle: '같은 경험을 다섯 가지 톤으로.',
+    templatesBody: '각 레이아웃은 같은 데이터 모델을 공유하므로 구조는 유지하고 역할에 맞게 시각적 목소리만 바꿀 수 있습니다.',
+    templates: [
+      { name: 'Modern', tone: '편집적이고 균형 잡힘' },
+      { name: 'Minimal', tone: '조용하고 정확함' },
+      { name: 'Classic', tone: '공식적이고 익숙함' },
+      { name: 'Creative', tone: '표현적이지만 절제됨' },
+      { name: 'Professional', tone: '밀도 높고 전문적' },
+    ],
+    finalTitle: '더 강한 첫 페이지로 시작하세요.',
+    finalBody: '샘플 이력서에서 시작해 실제 경험으로 바꾸고, 페이지가 무엇을 더 편집해야 하는지 보여주게 하세요.',
+    finalCta: '에디터 열기',
+  },
 };
 
 export function LandingPage({ language, onLanguageChange, onStart }: LandingPageProps) {
@@ -244,18 +385,18 @@ export function LandingPage({ language, onLanguageChange, onStart }: LandingPage
           <div className="flex items-center gap-2">
             <Languages size={14} className="text-[#8C8C85]" aria-hidden="true" />
             <span className="sr-only">{t.languageLabel}</span>
-            {(['en', 'zh'] as const).map((option) => (
+            {SUPPORTED_LANGUAGES.map((option) => (
               <button
-                key={option}
+                key={option.id}
                 type="button"
-                onClick={() => onLanguageChange(option)}
+                onClick={() => onLanguageChange(option.id)}
                 className={`h-8 min-w-10 border px-3 text-[10px] font-bold uppercase tracking-[0.16em] transition-colors ${
-                  language === option
+                  language === option.id
                     ? 'border-[#1A1A1A] bg-[#1A1A1A] text-white'
                     : 'border-[#D9D9D3] bg-transparent text-[#8C8C85] hover:border-[#1A1A1A] hover:text-[#1A1A1A]'
                 }`}
               >
-                {option === 'en' ? 'EN' : '中文'}
+                {option.label}
               </button>
             ))}
           </div>

@@ -11,6 +11,7 @@ import {
   loadSessionAiConfig,
   saveSessionAiConfig,
 } from '@/lib/ai-config';
+import { appCopy, sectionTitlesByLanguage } from '@/lib/i18n';
 import { detectBrowserLanguage } from '@/lib/language';
 import { ResumeData, ResumeConfig } from '@/types/resume';
 import { Download, Eye, Edit2, FileUp, Settings } from 'lucide-react';
@@ -88,36 +89,31 @@ const initialConfig: ResumeConfig = {
   }
 };
 
-const sectionTitlesByLanguage: Record<ResumeConfig['language'], ResumeConfig['sectionTitles']> = {
-  en: {
-    summary: 'Profile',
-    experience: 'Experience',
-    education: 'Education',
-    projects: 'Projects',
-    skills: 'Skills',
-  },
-  zh: {
-    summary: '职业摘要',
-    experience: '工作经历',
-    education: '教育经历',
-    projects: '项目经历',
-    skills: '技能',
-  },
-};
-
 const navItems = [
-  { id: 'design', label: 'Design' },
-  { id: 'personal', label: 'Personal' },
-  { id: 'summary', label: 'Summary' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'education', label: 'Education' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'skills', label: 'Skills' },
+  { id: 'design' },
+  { id: 'personal' },
+  { id: 'summary' },
+  { id: 'experience' },
+  { id: 'education' },
+  { id: 'projects' },
+  { id: 'skills' },
 ];
+
+function getBrowserLanguage() {
+  if (typeof navigator === 'undefined') return 'en';
+  return detectBrowserLanguage(navigator.language);
+}
 
 export default function ResumeBuilder() {
   const [data, setData] = useState<ResumeData>(initialData);
-  const [config, setConfig] = useState<ResumeConfig>(initialConfig);
+  const [config, setConfig] = useState<ResumeConfig>(() => {
+    const language = getBrowserLanguage();
+    return {
+      ...initialConfig,
+      language,
+      sectionTitles: sectionTitlesByLanguage[language],
+    };
+  });
   const [aiConfig, setAiConfig] = useState<AiConfig>(() => {
     if (typeof sessionStorage === 'undefined') return loadSessionAiConfig();
     return loadSessionAiConfig(sessionStorage);
@@ -128,10 +124,8 @@ export default function ResumeBuilder() {
   const [showAiConfigPanel, setShowAiConfigPanel] = useState(false);
   const [isCloudExporting, setIsCloudExporting] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
-  const [landingLanguage, setLandingLanguage] = useState<ResumeConfig['language']>(() => {
-    if (typeof navigator === 'undefined') return 'en';
-    return detectBrowserLanguage(navigator.language);
-  });
+  const [landingLanguage, setLandingLanguage] = useState<ResumeConfig['language']>(getBrowserLanguage);
+  const t = appCopy[config.language];
   
   useEffect(() => {
     saveSessionAiConfig(aiConfig, sessionStorage);
@@ -167,7 +161,7 @@ export default function ResumeBuilder() {
       anchor.click();
       URL.revokeObjectURL(url);
     } catch {
-      window.alert('Server PDF export failed. This deployment needs a Node/Chromium-capable PDF runtime.');
+      window.alert(t.pdfError);
     } finally {
       setIsCloudExporting(false);
     }
@@ -191,13 +185,13 @@ export default function ResumeBuilder() {
           onClick={() => setActiveTab('edit')} 
           className={`flex-1 py-4 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 ${activeTab === 'edit' ? 'border-b-2 border-black text-black' : 'text-[#8C8C85]'}`}
         >
-          <Edit2 size={14} /> Editor
+          <Edit2 size={14} /> {t.mobileEditor}
         </button>
         <button 
           onClick={() => setActiveTab('preview')} 
           className={`flex-1 py-4 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 ${activeTab === 'preview' ? 'border-b-2 border-black text-black' : 'text-[#8C8C85]'}`}
         >
-          <Eye size={14} /> Preview
+          <Eye size={14} /> {t.mobilePreview}
         </button>
       </div>
 
@@ -206,15 +200,18 @@ export default function ResumeBuilder() {
         <header className="p-4 md:p-6 border-b border-[#F0F0EB] shrink-0 bg-white z-10">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-[10px] md:text-xs tracking-[0.2em] uppercase font-semibold text-[#8C8C85] mb-1">Resume Engine</h1>
-              <p className="text-lg md:text-xl font-serif italic text-[#333]">Editorial Suite</p>
+              <h1 className="text-[10px] md:text-xs tracking-[0.2em] uppercase font-semibold text-[#8C8C85] mb-1">{t.shellKicker}</h1>
+              <p className="text-lg md:text-xl font-serif italic text-[#333]">{t.shellTitle}</p>
             </div>
             <button
               type="button"
-              onClick={() => setShowLanding(true)}
+              onClick={() => {
+                setLandingLanguage(config.language);
+                setShowLanding(true);
+              }}
               className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#8C8C85] transition-colors hover:text-[#1A1A1A]"
             >
-              Intro
+              {t.intro}
             </button>
           </div>
         </header>
@@ -231,7 +228,7 @@ export default function ResumeBuilder() {
                     ? 'border-black text-black bg-white' 
                     : 'border-transparent text-[#8C8C85] hover:text-black hover:bg-[#F5F5F0]'}`}
               >
-                {item.label}
+                {t.nav[item.id]}
               </button>
             ))}
           </div>
@@ -244,8 +241,9 @@ export default function ResumeBuilder() {
               setData={setData}
               config={config}
               setConfig={setConfig}
-              aiConfig={aiConfig}
-            />
+            aiConfig={aiConfig}
+            language={config.language}
+          />
           </div>
         </div>
 
@@ -254,6 +252,7 @@ export default function ResumeBuilder() {
             aiConfig={aiConfig}
             data={data}
             config={config}
+            language={config.language}
             onApply={setData}
             onRestore={(nextData, nextConfig) => {
               setData(nextData);
@@ -266,6 +265,8 @@ export default function ResumeBuilder() {
         {showAiConfigPanel && (
           <AiConfigPanel
             aiConfig={aiConfig}
+            config={config}
+            setConfig={setConfig}
             setAiConfig={setAiConfig}
             onClose={() => setShowAiConfigPanel(false)}
           />
@@ -280,7 +281,7 @@ export default function ResumeBuilder() {
             }}
             className="flex-1 py-3 border border-black text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-[#1A1A1A] hover:text-white transition-colors flex items-center justify-center gap-2"
           >
-            <Settings size={14} /> Config
+            <Settings size={14} /> {t.config}
           </button>
           <button
             type="button"
@@ -290,7 +291,7 @@ export default function ResumeBuilder() {
             }}
             className="flex-1 py-3 border border-black text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-[#1A1A1A] hover:text-white transition-colors flex items-center justify-center gap-2"
           >
-            <FileUp size={14} /> Import
+            <FileUp size={14} /> {t.import}
           </button>
           <button
             type="button"
@@ -298,7 +299,7 @@ export default function ResumeBuilder() {
             disabled={isCloudExporting}
             className="flex-1 py-3 bg-[#1A1A1A] text-white text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-black transition-colors disabled:bg-[#D9D9D3] flex items-center justify-center gap-2"
           >
-            <Download size={14} /> {isCloudExporting ? 'Exporting' : 'PDF'}
+            <Download size={14} /> {isCloudExporting ? t.exporting : 'PDF'}
           </button>
         </footer>
       </aside>

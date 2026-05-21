@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { MarkdownInput } from './MarkdownInput';
 import type { AiConfig } from '@/lib/ai-config';
 import type { EnhanceFieldType } from '@/lib/enhance';
+import { formCopy } from '@/lib/i18n';
 
 interface FormSectionProps {
   activeNav: string;
@@ -12,6 +13,7 @@ interface FormSectionProps {
   config: ResumeConfig;
   setConfig: React.Dispatch<React.SetStateAction<ResumeConfig>>;
   aiConfig: AiConfig;
+  language: ResumeConfig['language'];
 }
 
 const templateOptions: ResumeConfig['template'][] = [
@@ -22,8 +24,9 @@ const templateOptions: ResumeConfig['template'][] = [
   'professional',
 ];
 
-export function FormSection({ activeNav, data, setData, config, setConfig, aiConfig }: FormSectionProps) {
+export function FormSection({ activeNav, data, setData, config, setConfig, aiConfig, language }: FormSectionProps) {
   const [enhancingInfo, setEnhancingInfo] = useState<{ field: string, id?: string } | null>(null);
+  const t = formCopy[language];
 
   const updatePersonalInfo = (field: keyof typeof data.personalInfo, value: string | CustomField[] | string[]) => {
     setData({ ...data, personalInfo: { ...data.personalInfo, [field]: value } });
@@ -40,7 +43,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
 
   const addCustomField = () => {
     const fields = data.personalInfo.customFields || [];
-    updatePersonalInfo('customFields', [...fields, { id: Date.now().toString(), label: 'New Field', value: '' }]);
+    updatePersonalInfo('customFields', [...fields, { id: Date.now().toString(), label: t.newField, value: '' }]);
   };
 
   const updateCustomField = (id: string, key: keyof CustomField, value: string) => {
@@ -119,7 +122,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
       {activeNav === 'design' && (
         <>
           <section>
-            <label className="text-[10px] uppercase tracking-widest font-bold mb-4 block text-[#1A1A1A]">Design Template</label>
+            <label className="text-[10px] uppercase tracking-widest font-bold mb-4 block text-[#1A1A1A]">{t.designTemplate}</label>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
               {templateOptions.map((t) => (
                 <button
@@ -138,7 +141,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
           </section>
 
           <section>
-            <label className="text-[10px] uppercase tracking-widest font-bold mb-4 block text-[#1A1A1A]">Color Palette</label>
+            <label className="text-[10px] uppercase tracking-widest font-bold mb-4 block text-[#1A1A1A]">{t.colorPalette}</label>
             <div className="flex flex-wrap gap-3">
               {[ '#1A1A1A', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#FF6321' ].map(color => (
                 <button
@@ -152,7 +155,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
           </section>
 
           <section>
-            <label className="text-[10px] uppercase tracking-widest font-bold mb-4 block text-[#1A1A1A]">Typography</label>
+            <label className="text-[10px] uppercase tracking-widest font-bold mb-4 block text-[#1A1A1A]">{t.typography}</label>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
               {[
                 { id: 'font-sans', label: 'Sans' },
@@ -173,24 +176,6 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
               ))}
             </div>
           </section>
-          <section>
-            <label className="text-[10px] uppercase tracking-widest font-bold mb-4 block text-[#1A1A1A]">Language</label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => setConfig({ ...config, language: 'en' })}
-                className={`py-3 text-[10px] uppercase tracking-widest border rounded-sm transition-colors ${config.language === 'en' ? 'bg-[#1A1A1A] border-black text-white' : 'border-[#E5E5E0] text-[#8C8C85] hover:bg-[#F9F9F7]'}`}
-              >
-                English
-              </button>
-              <button
-                onClick={() => setConfig({ ...config, language: 'zh' })}
-                className={`py-3 text-[10px] uppercase tracking-widest border rounded-sm transition-colors ${config.language === 'zh' ? 'bg-[#1A1A1A] border-black text-white' : 'border-[#E5E5E0] text-[#8C8C85] hover:bg-[#F9F9F7]'}`}
-              >
-                Chinese
-              </button>
-            </div>
-          </section>
-
         </>
       )}
 
@@ -198,30 +183,30 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
       {activeNav === 'personal' && (
         <section className="space-y-4">
           <div className="flex justify-between items-center mb-4">
-            <label className="text-[10px] uppercase tracking-widest font-bold text-[#1A1A1A]">Personal Details</label>
+            <label className="text-[10px] uppercase tracking-widest font-bold text-[#1A1A1A]">{t.personalDetails}</label>
             <label className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-[#1A1A1A] cursor-pointer">
               <input type="checkbox" checked={config.showIcons} onChange={e => setConfig({ ...config, showIcons: e.target.checked })} className="rounded-sm outline-none" />
-              Show Icons
+              {t.showIcons}
             </label>
           </div>
           <div className="space-y-4">
             <div className="flex items-center gap-4 py-2">
               {data.personalInfo.photo ? (
                 <div className="w-16 h-16 rounded-full overflow-hidden border border-[#D9D9D3] shrink-0 relative group">
-                  <img src={data.personalInfo.photo} alt="Profile" className="w-full h-full object-cover" />
+                  <img src={data.personalInfo.photo} alt={t.photo} className="w-full h-full object-cover" />
                   <button onClick={() => updatePersonalInfo('photo', '')} className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <Trash2 size={12} />
                   </button>
                 </div>
               ) : (
                 <div className="w-16 h-16 rounded-full bg-[#EBEBE6] border border-[#D9D9D3] flex items-center justify-center shrink-0">
-                  <span className="text-[10px] uppercase font-bold text-[#A1A19A]">Photo</span>
+                  <span className="text-[10px] uppercase font-bold text-[#A1A19A]">{t.photo}</span>
                 </div>
               )}
               <div className="flex-1">
                 <input
                   type="text"
-                  placeholder="Paste Photo URL here"
+                  placeholder={t.photoPlaceholder}
                   value={data.personalInfo.photo || ''}
                   onChange={e => updatePersonalInfo('photo', e.target.value)}
                   className="w-full border-b border-[#D9D9D3] focus:border-black outline-none py-1 text-sm bg-transparent transition-colors"
@@ -230,25 +215,25 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <InputField label="Full Name" value={data.personalInfo.name} onChange={v => updatePersonalInfo('name', v)} />
-              <InputField label="Title" value={data.personalInfo.title} onChange={v => updatePersonalInfo('title', v)} />
+              <InputField label={t.fullName} value={data.personalInfo.name} onChange={v => updatePersonalInfo('name', v)} />
+              <InputField label={t.title} value={data.personalInfo.title} onChange={v => updatePersonalInfo('title', v)} />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <ToggleableInputField field="email" label="Email" value={data.personalInfo.email} onChange={v => updatePersonalInfo('email', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('email')} onToggle={() => toggleHiddenField('email')} />
-              <ToggleableInputField field="phone" label="Phone" value={data.personalInfo.phone} onChange={v => updatePersonalInfo('phone', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('phone')} onToggle={() => toggleHiddenField('phone')} />
+              <ToggleableInputField field="email" label={t.email} value={data.personalInfo.email} onChange={v => updatePersonalInfo('email', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('email')} onToggle={() => toggleHiddenField('email')} showLabel={t.showField} hideLabel={t.hideField} />
+              <ToggleableInputField field="phone" label={t.phone} value={data.personalInfo.phone} onChange={v => updatePersonalInfo('phone', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('phone')} onToggle={() => toggleHiddenField('phone')} showLabel={t.showField} hideLabel={t.hideField} />
             </div>
-            <ToggleableInputField field="location" label="Location" value={data.personalInfo.location} onChange={v => updatePersonalInfo('location', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('location')} onToggle={() => toggleHiddenField('location')} />
+            <ToggleableInputField field="location" label={t.location} value={data.personalInfo.location} onChange={v => updatePersonalInfo('location', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('location')} onToggle={() => toggleHiddenField('location')} showLabel={t.showField} hideLabel={t.hideField} />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <ToggleableInputField field="github" label="GitHub" value={data.personalInfo.github} onChange={v => updatePersonalInfo('github', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('github')} onToggle={() => toggleHiddenField('github')} />
-              <ToggleableInputField field="linkedin" label="LinkedIn" value={data.personalInfo.linkedin} onChange={v => updatePersonalInfo('linkedin', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('linkedin')} onToggle={() => toggleHiddenField('linkedin')} />
-              <ToggleableInputField field="website" label="Website" value={data.personalInfo.website} onChange={v => updatePersonalInfo('website', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('website')} onToggle={() => toggleHiddenField('website')} />
+              <ToggleableInputField field="github" label="GitHub" value={data.personalInfo.github} onChange={v => updatePersonalInfo('github', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('github')} onToggle={() => toggleHiddenField('github')} showLabel={t.showField} hideLabel={t.hideField} />
+              <ToggleableInputField field="linkedin" label="LinkedIn" value={data.personalInfo.linkedin} onChange={v => updatePersonalInfo('linkedin', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('linkedin')} onToggle={() => toggleHiddenField('linkedin')} showLabel={t.showField} hideLabel={t.hideField} />
+              <ToggleableInputField field="website" label={t.website} value={data.personalInfo.website} onChange={v => updatePersonalInfo('website', v)} isHidden={(data.personalInfo.hiddenFields || []).includes('website')} onToggle={() => toggleHiddenField('website')} showLabel={t.showField} hideLabel={t.hideField} />
             </div>
           </div>
           
           {/* Custom Fields */}
           {(data.personalInfo.customFields || []).length > 0 && (
             <div className="mt-8 space-y-4 pt-4 border-t border-[#F0F0EB]">
-              <label className="text-[10px] uppercase tracking-widest font-bold block text-[#1A1A1A]">Custom Fields</label>
+              <label className="text-[10px] uppercase tracking-widest font-bold block text-[#1A1A1A]">{t.customFields}</label>
               <div className="space-y-4">
                 {(data.personalInfo.customFields || []).map(f => (
                   <div key={f.id} className="flex gap-2 items-center">
@@ -271,7 +256,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
             </div>
           )}
           <button onClick={addCustomField} className="w-full mt-4 py-3 border border-dashed border-[#D9D9D3] rounded-sm text-[10px] uppercase tracking-widest font-bold text-[#8C8C85] hover:bg-[#F9F9F7] transition-colors flex items-center justify-center gap-2">
-            <Plus size={14} /> Add Custom Field
+            <Plus size={14} /> {t.addCustomField}
           </button>
         </section>
       )}
@@ -287,24 +272,26 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
              />
             <label className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-[#8C8C85] cursor-pointer">
               <input type="checkbox" checked={config.visibleSections.summary} onChange={e => setConfig({ ...config, visibleSections: { ...config.visibleSections, summary: e.target.checked } })} className="rounded-sm outline-none" />
-              Visible
+              {t.visible}
             </label>
           </div>
           <div className="bg-[#F9F9F7] p-4 rounded-lg border border-[#EBEBE6]">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] uppercase tracking-widest font-bold">Summary Refiner</label>
+              <label className="text-[10px] uppercase tracking-widest font-bold">{t.summaryRefiner}</label>
               <span className="px-2 py-0.5 bg-[#1A1A1A] text-white text-[8px] rounded-full">AI</span>
             </div>
             <div className="bg-white p-1 rounded border border-[#EBEBE6]">
               <MarkdownInput
                 value={data.summary}
                 onChange={v => setData({ ...data, summary: v })}
-                placeholder="Write a brief professional background..."
+                placeholder={t.summaryPlaceholder}
               />
             </div>
             <EnhanceButton 
               onClick={() => handleEnhance(data.summary, 'summary', 'summary')} 
               isEnhancing={enhancingInfo?.field === 'summary'} 
+              enhanceLabel={t.enhance}
+              enhancingLabel={t.enhancing}
             />
           </div>
         </section>
@@ -321,11 +308,11 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
              />
             <label className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-[#8C8C85] cursor-pointer">
               <input type="checkbox" checked={config.visibleSections.experience} onChange={e => setConfig({ ...config, visibleSections: { ...config.visibleSections, experience: e.target.checked } })} className="rounded-sm outline-none" />
-              Visible
+              {t.visible}
             </label>
           </div>
           <div className="space-y-8">
-            {data.experience.map((exp, index) => (
+            {data.experience.map((exp) => (
               <div key={exp.id} className="relative group space-y-4 pt-4 border-t border-[#F0F0EB] first:border-0 first:pt-0">
                 <button 
                   onClick={() => removeExperience(exp.id)}
@@ -334,16 +321,16 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
                   <Trash2 size={14} />
                 </button>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <InputField label="Company" value={exp.company} onChange={v => updateExperience(exp.id, 'company', v)} />
-                  <InputField label="Role" value={exp.role} onChange={v => updateExperience(exp.id, 'role', v)} />
+                  <InputField label={t.company} value={exp.company} onChange={v => updateExperience(exp.id, 'company', v)} />
+                  <InputField label={t.role} value={exp.role} onChange={v => updateExperience(exp.id, 'role', v)} />
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <InputField label="Start Date" value={exp.startDate} onChange={v => updateExperience(exp.id, 'startDate', v)} />
-                  <InputField label="End Date" value={exp.endDate} onChange={v => updateExperience(exp.id, 'endDate', v)} />
+                  <InputField label={t.startDate} value={exp.startDate} onChange={v => updateExperience(exp.id, 'startDate', v)} />
+                  <InputField label={t.endDate} value={exp.endDate} onChange={v => updateExperience(exp.id, 'endDate', v)} />
                 </div>
                 <div className="bg-[#F9F9F7] p-3 rounded-lg border border-[#EBEBE6]">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-[#8C8C85]">Description</span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-[#8C8C85]">{t.description}</span>
                     <span className="px-2 py-0.5 bg-[#1A1A1A] text-white text-[8px] rounded-full">AI</span>
                   </div>
                   <div className="bg-white rounded border border-[#EBEBE6]">
@@ -356,12 +343,14 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
                   <EnhanceButton 
                     onClick={() => handleEnhance(exp.description, 'experience', 'experience', exp.id)} 
                     isEnhancing={enhancingInfo?.field === 'experience' && enhancingInfo.id === exp.id} 
+                    enhanceLabel={t.enhance}
+                    enhancingLabel={t.enhancing}
                   />
                 </div>
               </div>
             ))}
             <button onClick={addExperience} className="w-full py-3 border border-[#D9D9D3] rounded-sm text-[10px] uppercase tracking-widest font-bold text-[#8C8C85] hover:bg-[#F9F9F7] transition-colors flex items-center justify-center gap-2">
-              <Plus size={14} /> Add Experience
+              <Plus size={14} /> {t.addExperience}
             </button>
           </div>
         </section>
@@ -378,7 +367,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
              />
             <label className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-[#8C8C85] cursor-pointer">
               <input type="checkbox" checked={config.visibleSections.education} onChange={e => setConfig({ ...config, visibleSections: { ...config.visibleSections, education: e.target.checked } })} className="rounded-sm outline-none" />
-              Visible
+              {t.visible}
             </label>
           </div>
           <div className="space-y-8">
@@ -391,15 +380,15 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
                   <Trash2 size={14} />
                 </button>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <InputField label="School" value={ed.school} onChange={v => updateEducation(ed.id, 'school', v)} />
-                  <InputField label="Degree" value={ed.degree} onChange={v => updateEducation(ed.id, 'degree', v)} />
+                  <InputField label={t.school} value={ed.school} onChange={v => updateEducation(ed.id, 'school', v)} />
+                  <InputField label={t.degree} value={ed.degree} onChange={v => updateEducation(ed.id, 'degree', v)} />
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <InputField label="Start Date" value={ed.startDate} onChange={v => updateEducation(ed.id, 'startDate', v)} />
-                  <InputField label="End Date" value={ed.endDate} onChange={v => updateEducation(ed.id, 'endDate', v)} />
+                  <InputField label={t.startDate} value={ed.startDate} onChange={v => updateEducation(ed.id, 'startDate', v)} />
+                  <InputField label={t.endDate} value={ed.endDate} onChange={v => updateEducation(ed.id, 'endDate', v)} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-[#1A1A1A] opacity-80">Description</label>
+                  <label className="text-[10px] uppercase tracking-widest font-bold text-[#1A1A1A] opacity-80">{t.description}</label>
                   <MarkdownInput
                     value={ed.description}
                     onChange={v => updateEducation(ed.id, 'description', v)}
@@ -409,7 +398,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
               </div>
             ))}
             <button onClick={addEducation} className="w-full py-3 border border-[#D9D9D3] rounded-sm text-[10px] uppercase tracking-widest font-bold text-[#8C8C85] hover:bg-[#F9F9F7] transition-colors flex items-center justify-center gap-2">
-              <Plus size={14} /> Add Education
+              <Plus size={14} /> {t.addEducation}
             </button>
           </div>
         </section>
@@ -426,7 +415,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
              />
             <label className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-[#8C8C85] cursor-pointer">
               <input type="checkbox" checked={config.visibleSections.projects} onChange={e => setConfig({ ...config, visibleSections: { ...config.visibleSections, projects: e.target.checked } })} className="rounded-sm outline-none" />
-              Visible
+              {t.visible}
             </label>
           </div>
           <div className="space-y-8">
@@ -439,12 +428,12 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
                   <Trash2 size={14} />
                 </button>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <InputField label="Project Name" value={proj.name} onChange={v => updateProject(proj.id, 'name', v)} />
-                  <InputField label="Link (URL)" value={proj.link} onChange={v => updateProject(proj.id, 'link', v)} />
+                  <InputField label={t.projectName} value={proj.name} onChange={v => updateProject(proj.id, 'name', v)} />
+                  <InputField label={t.projectLink} value={proj.link} onChange={v => updateProject(proj.id, 'link', v)} />
                 </div>
                 <div className="bg-[#F9F9F7] p-3 rounded-lg border border-[#EBEBE6]">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-[#8C8C85]">Description</span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-[#8C8C85]">{t.description}</span>
                   </div>
                   <div className="bg-white rounded border border-[#EBEBE6]">
                     <MarkdownInput
@@ -457,7 +446,7 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
               </div>
             ))}
             <button onClick={addProject} className="w-full py-3 border border-[#D9D9D3] rounded-sm text-[10px] uppercase tracking-widest font-bold text-[#8C8C85] hover:bg-[#F9F9F7] transition-colors flex items-center justify-center gap-2">
-              <Plus size={14} /> Add Project
+              <Plus size={14} /> {t.addProject}
             </button>
           </div>
         </section>
@@ -474,13 +463,13 @@ export function FormSection({ activeNav, data, setData, config, setConfig, aiCon
              />
             <label className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-[#8C8C85] cursor-pointer">
               <input type="checkbox" checked={config.visibleSections.skills} onChange={e => setConfig({ ...config, visibleSections: { ...config.visibleSections, skills: e.target.checked } })} className="rounded-sm outline-none" />
-              Visible
+              {t.visible}
             </label>
           </div>
           <MarkdownInput
             value={data.skills || ''}
             onChange={v => setData({ ...data, skills: v })}
-            placeholder="e.g. Figma (Adv), Framer, Midjourney..."
+            placeholder={t.skillsPlaceholder}
             className="h-48"
           />
         </section>
@@ -505,12 +494,12 @@ function InputField({ label, value, onChange }: { label: string, value: string, 
   );
 }
 
-function ToggleableInputField({ field, label, value, onChange, isHidden, onToggle }: { field: string, label: string, value: string, onChange: (v: string) => void, isHidden: boolean, onToggle: () => void }) {
+function ToggleableInputField({ label, value, onChange, isHidden, onToggle, showLabel, hideLabel }: { field: string, label: string, value: string, onChange: (v: string) => void, isHidden: boolean, onToggle: () => void, showLabel: string, hideLabel: string }) {
   return (
     <div>
       <div className="flex justify-between items-center mb-1.5">
         <label className={`text-[10px] uppercase tracking-widest font-bold block text-[#1A1A1A] ${isHidden ? 'opacity-40' : 'opacity-80'}`}>{label}</label>
-        <button onClick={onToggle} className={`p-0.5 rounded ${isHidden ? 'text-gray-400' : 'text-blue-600 hover:bg-gray-100'} transition-colors`} title={isHidden ? 'Show field' : 'Hide field'}>
+        <button onClick={onToggle} className={`p-0.5 rounded ${isHidden ? 'text-gray-400' : 'text-blue-600 hover:bg-gray-100'} transition-colors`} title={isHidden ? showLabel : hideLabel}>
           {isHidden ? <EyeOff size={12} /> : <Eye size={12} />}
         </button>
       </div>
@@ -525,7 +514,7 @@ function ToggleableInputField({ field, label, value, onChange, isHidden, onToggl
   );
 }
 
-function EnhanceButton({ onClick, isEnhancing }: { onClick: () => void, isEnhancing: boolean }) {
+function EnhanceButton({ onClick, isEnhancing, enhanceLabel, enhancingLabel }: { onClick: () => void, isEnhancing: boolean, enhanceLabel: string, enhancingLabel: string }) {
   return (
     <button
       onClick={onClick}
@@ -535,10 +524,10 @@ function EnhanceButton({ onClick, isEnhancing }: { onClick: () => void, isEnhanc
       {isEnhancing ? (
         <>
           <Sparkles size={12} className="animate-pulse" />
-          Enhancing...
+          {enhancingLabel}
         </>
       ) : (
-        'Enhance with AI'
+        enhanceLabel
       )}
     </button>
   );

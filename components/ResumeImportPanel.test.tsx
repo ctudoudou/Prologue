@@ -58,6 +58,7 @@ function renderPanel(props: Partial<ComponentProps<typeof ResumeImportPanel>> = 
       aiConfig={aiConfig}
       data={parsedData}
       config={config}
+      language="en"
       onApply={vi.fn()}
       onRestore={vi.fn()}
       onClose={vi.fn()}

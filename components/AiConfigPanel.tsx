@@ -7,9 +7,13 @@ import {
   defaultBaseUrlForProvider,
   defaultModelForProvider,
 } from '@/lib/ai-config';
+import { SUPPORTED_LANGUAGES, configCopy, sectionTitlesByLanguage } from '@/lib/i18n';
+import type { ResumeConfig } from '@/types/resume';
 
 interface AiConfigPanelProps {
   aiConfig: AiConfig;
+  config: ResumeConfig;
+  setConfig: Dispatch<SetStateAction<ResumeConfig>>;
   setAiConfig: Dispatch<SetStateAction<AiConfig>>;
   onClose: () => void;
 }
@@ -26,7 +30,9 @@ const apiKeyPlaceholders: Record<AiProvider, string> = {
   volcengine: 'Volcengine Ark API key',
 };
 
-export function AiConfigPanel({ aiConfig, setAiConfig, onClose }: AiConfigPanelProps) {
+export function AiConfigPanel({ aiConfig, config, setConfig, setAiConfig, onClose }: AiConfigPanelProps) {
+  const t = configCopy[config.language];
+
   const switchProvider = (provider: AiProvider) => {
     setAiConfig(current => ({
       ...current,
@@ -42,28 +48,62 @@ export function AiConfigPanel({ aiConfig, setAiConfig, onClose }: AiConfigPanelP
     }));
   };
 
+  const switchLanguage = (language: ResumeConfig['language']) => {
+    setConfig(current => ({
+      ...current,
+      language,
+      sectionTitles: sectionTitlesByLanguage[language],
+    }));
+  };
+
   return (
     <section className="border-t border-[#F0F0EB] bg-white p-4 md:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#1A1A1A]">
-            AI Model Config
+            {t.title}
           </h2>
           <p className="mt-2 text-xs leading-5 text-[#666]">
-            Configure the provider used by enhance and AI import requests.
+            {t.body}
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
           className="p-2 text-[#8C8C85] transition-colors hover:text-[#1A1A1A]"
-          aria-label="Close AI config panel"
+          aria-label={t.closeLabel}
         >
           <X size={16} />
         </button>
       </div>
 
       <div className="mt-4 space-y-4 bg-[#F9F9F7] border border-[#EBEBE6] p-4">
+        <div>
+          <span className="text-[10px] uppercase tracking-widest font-bold mb-2 block text-[#1A1A1A] opacity-80">
+            {t.language}
+          </span>
+          <div className="grid grid-cols-4 gap-2">
+            {SUPPORTED_LANGUAGES.map(language => (
+              <button
+                key={language.id}
+                type="button"
+                onClick={() => switchLanguage(language.id)}
+                className={`py-3 text-[10px] uppercase tracking-widest border transition-colors ${
+                  config.language === language.id
+                    ? 'bg-[#1A1A1A] border-black text-white'
+                    : 'border-[#E5E5E0] text-[#8C8C85] hover:bg-white'
+                }`}
+              >
+                {language.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <span className="text-[10px] uppercase tracking-widest font-bold mb-2 block text-[#1A1A1A] opacity-80">
+            {t.aiProvider}
+          </span>
         <div className="grid grid-cols-3 gap-2">
           {AI_PROVIDERS.map(provider => (
             <button
@@ -80,10 +120,11 @@ export function AiConfigPanel({ aiConfig, setAiConfig, onClose }: AiConfigPanelP
             </button>
           ))}
         </div>
+        </div>
 
         <label className="block">
           <span className="text-[10px] uppercase tracking-widest font-bold mb-1.5 block text-[#1A1A1A] opacity-80">
-            Model
+            {t.model}
           </span>
           <input
             value={aiConfig.model}
@@ -95,7 +136,7 @@ export function AiConfigPanel({ aiConfig, setAiConfig, onClose }: AiConfigPanelP
 
         <label className="block">
           <span className="text-[10px] uppercase tracking-widest font-bold mb-1.5 block text-[#1A1A1A] opacity-80">
-            Base URL
+            {t.baseUrl}
           </span>
           <input
             value={aiConfig.baseUrl ?? defaultBaseUrlForProvider(aiConfig.provider)}
@@ -107,7 +148,7 @@ export function AiConfigPanel({ aiConfig, setAiConfig, onClose }: AiConfigPanelP
 
         <label className="block">
           <span className="text-[10px] uppercase tracking-widest font-bold mb-1.5 block text-[#1A1A1A] opacity-80">
-            API Key
+            {t.apiKey}
           </span>
           <input
             type="password"
@@ -120,10 +161,7 @@ export function AiConfigPanel({ aiConfig, setAiConfig, onClose }: AiConfigPanelP
 
         <div className="flex items-start gap-3 border-t border-[#E5E5E0] pt-4 text-[11px] leading-5 text-[#8C8C85]">
           <Bot size={16} className="mt-0.5 shrink-0 text-[#1A1A1A]" />
-          <p>
-            Stored in this browser session only. Keys and resume content are sent only for
-            the current AI request and are not persisted by Prologue.
-          </p>
+          <p>{t.privacy}</p>
         </div>
       </div>
     </section>

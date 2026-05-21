@@ -48,6 +48,24 @@ describe('LandingPage', () => {
     expect(onLanguageChange).toHaveBeenCalledWith('zh');
   });
 
+  it('requests Japanese and Korean language changes', () => {
+    const onLanguageChange = vi.fn();
+
+    render(
+      <LandingPage
+        language="en"
+        onLanguageChange={onLanguageChange}
+        onStart={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '日本語' }));
+    fireEvent.click(screen.getByRole('button', { name: '한국어' }));
+
+    expect(onLanguageChange).toHaveBeenCalledWith('ja');
+    expect(onLanguageChange).toHaveBeenCalledWith('ko');
+  });
+
   it('renders Chinese copy', () => {
     render(
       <LandingPage
@@ -64,5 +82,29 @@ describe('LandingPage', () => {
     expect(screen.getByText('不存储隐私简历')).toBeInTheDocument();
     expect(screen.getByText('完全开源')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '开始撰写' })).toBeInTheDocument();
+  });
+
+  it('renders Japanese and Korean copy', () => {
+    const { rerender } = render(
+      <LandingPage
+        language="ja"
+        onLanguageChange={vi.fn()}
+        onStart={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('職務経歴を、読まれる第一章へ。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '書き始める' })).toBeInTheDocument();
+
+    rerender(
+      <LandingPage
+        language="ko"
+        onLanguageChange={vi.fn()}
+        onStart={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('경력 기록을 읽히는 첫 장으로 바꾸세요.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '작성 시작' })).toBeInTheDocument();
   });
 });

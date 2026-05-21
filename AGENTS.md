@@ -43,6 +43,7 @@ Important files:
 - `app/api/export/pdf/route.ts`: Node endpoint for Playwright PDF streaming.
 - `lib/ai-config.ts`: session-only client AI provider configuration helpers.
 - `lib/ai-provider.ts`: OpenAI/OpenRouter/Volcengine request validation and chat completion helper.
+- `lib/i18n.ts`: supported app languages and shared UI copy for editor, Config, import, and section titles.
 - `lib/resume-backup.ts`: versioned JSON backup validation.
 - `lib/resume-import.ts`: AI import prompt, parsing, normalization, and preview summary helpers.
 - `lib/pdf-export.ts`: PDF HTML rendering and PDF export payload validation.
@@ -74,6 +75,7 @@ AI features are configured in the editor with the **Config** button.
 ## Architecture Rules
 
 - Treat `ResumeData` and `ResumeConfig` in `types/resume.ts` as the contract between editor and preview.
+- Treat `ResumeConfig['language']` as a full UI language setting. When adding visible UI copy, update English, Chinese, Japanese, and Korean text together.
 - When adding a resume field, update the type, initial data, form editing path, and every relevant template rendering path together.
 - Keep top-level page state in `app/page.tsx` unless a change clearly needs a shared reducer or persistence layer.
 - Keep server-only AI behavior inside API routes and shared server-safe helpers.

@@ -20,6 +20,7 @@ The project is built as a Next.js application and is designed to run locally or 
 - Real-time A4 resume preview with server-rendered PDF export support.
 - Multiple resume templates: modern, minimal, classic, creative, and professional.
 - Theme color, typography, language, icon visibility, section title, and section visibility controls.
+- Full-page language support for English, Chinese, Japanese, and Korean, with the default selected from the browser locale.
 - Markdown editing for long-form resume content.
 - Custom personal information fields and optional hidden contact fields.
 - OpenAI-compatible AI text enhancement through OpenAI, OpenRouter, or Volcengine Ark.
@@ -56,7 +57,7 @@ npm install
 
 ### AI Provider Setup
 
-Open the editor, choose **Config**, select OpenAI, OpenRouter, or Volcengine, and enter an API key, model name, and compatible chat completions base URL. The key is stored only in browser `sessionStorage` under `prologue.aiConfig.v1`; it is sent to the server only for the current request and is never stored by the app.
+Open the editor and choose **Config** to change the page language or AI provider. Select OpenAI, OpenRouter, or Volcengine, then enter an API key, model name, and compatible chat completions base URL. The key is stored only in browser `sessionStorage` under `prologue.aiConfig.v1`; it is sent to the server only for the current request and is never stored by the app.
 
 Default model values:
 

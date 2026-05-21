@@ -6,6 +6,7 @@ import {
   parseResumeBackupText,
   type ResumeBackup,
 } from '@/lib/resume-backup';
+import { importCopy } from '@/lib/i18n';
 import type { ResumeConfig, ResumeData } from '@/types/resume';
 import type { ResumeImportSummary } from '@/lib/resume-import';
 
@@ -18,6 +19,7 @@ interface ResumeImportPanelProps {
   aiConfig: AiConfig;
   data: ResumeData;
   config: ResumeConfig;
+  language: ResumeConfig['language'];
   onApply: (data: ResumeData) => void;
   onRestore: (data: ResumeData, config: ResumeConfig) => void;
   onClose: () => void;
@@ -27,10 +29,12 @@ export function ResumeImportPanel({
   aiConfig,
   data,
   config,
+  language,
   onApply,
   onRestore,
   onClose,
 }: ResumeImportPanelProps) {
+  const t = importCopy[language];
   const fileInputRef = useRef<HTMLInputElement>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -61,13 +65,13 @@ export function ResumeImportPanel({
       const payload = await response.json();
 
       if (!response.ok) {
-        setError(payload.error || 'Resume import failed');
+        setError(payload.error || t.importFailed);
         return;
       }
 
       setPreview(payload);
     } catch {
-      setError('Resume import failed');
+      setError(t.importFailed);
     } finally {
       setIsImporting(false);
     }
@@ -118,17 +122,17 @@ export function ResumeImportPanel({
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#1A1A1A]">
-            Import Resume
+            {t.title}
           </h2>
           <p className="mt-2 text-xs leading-5 text-[#666]">
-            Upload Markdown or PDF. AI will parse it for review before replacing this resume.
+            {t.body}
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
           className="p-2 text-[#8C8C85] transition-colors hover:text-[#1A1A1A]"
-          aria-label="Close import panel"
+          aria-label={t.closeLabel}
         >
           <X size={16} />
         </button>
@@ -136,7 +140,7 @@ export function ResumeImportPanel({
 
       <div className="mt-4 grid gap-3">
         <label className="flex cursor-pointer items-center justify-between gap-3 border border-[#E5E5E0] bg-[#F9F9F7] px-4 py-3 text-xs text-[#555] transition-colors hover:bg-white">
-          <span className="truncate">{file ? file.name : 'Choose .md, .markdown, or .pdf'}</span>
+          <span className="truncate">{file ? file.name : t.chooseFile}</span>
           <FileUp size={16} className="shrink-0" />
           <input
             ref={fileInputRef}
@@ -153,7 +157,7 @@ export function ResumeImportPanel({
 
         {!aiConfig.apiKey.trim() && (
           <p className="text-xs leading-5 text-[#8A4B20]">
-            Add an API key in Config before AI import.
+            {t.apiKeyRequired}
           </p>
         )}
 
@@ -166,15 +170,15 @@ export function ResumeImportPanel({
             <div className="mt-3 grid grid-cols-3 gap-2 text-center">
               <div className="border border-[#E5E5E0] bg-white py-2">
                 <div className="text-sm font-semibold">{preview.summary.experienceCount}</div>
-                <div className="text-[9px] uppercase tracking-widest text-[#8C8C85]">Roles</div>
+                <div className="text-[9px] uppercase tracking-widest text-[#8C8C85]">{t.roles}</div>
               </div>
               <div className="border border-[#E5E5E0] bg-white py-2">
                 <div className="text-sm font-semibold">{preview.summary.educationCount}</div>
-                <div className="text-[9px] uppercase tracking-widest text-[#8C8C85]">Schools</div>
+                <div className="text-[9px] uppercase tracking-widest text-[#8C8C85]">{t.schools}</div>
               </div>
               <div className="border border-[#E5E5E0] bg-white py-2">
                 <div className="text-sm font-semibold">{preview.summary.projectCount}</div>
-                <div className="text-[9px] uppercase tracking-widest text-[#8C8C85]">Projects</div>
+                <div className="text-[9px] uppercase tracking-widest text-[#8C8C85]">{t.projects}</div>
               </div>
             </div>
             {preview.summary.skillsPreview.length > 0 && (
@@ -197,7 +201,7 @@ export function ResumeImportPanel({
             className="flex flex-1 items-center justify-center gap-2 bg-[#1A1A1A] py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:bg-[#D9D9D3]"
           >
             {isImporting ? <Loader2 size={14} className="animate-spin" /> : <FileUp size={14} />}
-            Parse
+            {t.parse}
           </button>
           <button
             type="button"
@@ -206,16 +210,16 @@ export function ResumeImportPanel({
             className="flex flex-1 items-center justify-center gap-2 border border-black py-3 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors hover:bg-[#1A1A1A] hover:text-white disabled:cursor-not-allowed disabled:border-[#D9D9D3] disabled:text-[#A8A8A0]"
           >
             <Check size={14} />
-            Apply
+            {t.apply}
           </button>
         </div>
 
         <div className="mt-3 border-t border-[#F0F0EB] pt-5">
           <h3 className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#1A1A1A]">
-            JSON Backup
+            {t.jsonBackup}
           </h3>
           <p className="mt-2 text-xs leading-5 text-[#666]">
-            Export a portable backup or restore one without using AI.
+            {t.jsonBody}
           </p>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
@@ -224,10 +228,10 @@ export function ResumeImportPanel({
               onClick={exportBackup}
               className="border border-black py-3 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors hover:bg-[#1A1A1A] hover:text-white"
             >
-              Export JSON
+              {t.exportJson}
             </button>
             <label className="cursor-pointer border border-[#E5E5E0] py-3 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-[#555] transition-colors hover:border-black hover:text-black">
-              Import JSON
+              {t.importJson}
               <input
                 ref={backupInputRef}
                 type="file"
@@ -243,14 +247,17 @@ export function ResumeImportPanel({
           {backupPreview && (
             <div className="mt-4 border border-[#E5E5E0] bg-[#F9F9F7] p-4">
               <div className="text-sm font-semibold text-[#1A1A1A]">
-                {backupPreview.data.personalInfo.name || 'Untitled candidate'}
+                {backupPreview.data.personalInfo.name || t.untitledCandidate}
               </div>
               <div className="mt-1 text-xs text-[#666]">
-                Backup from {new Date(backupPreview.exportedAt).toLocaleString()}
+                {t.backupFrom} {new Date(backupPreview.exportedAt).toLocaleString()}
               </div>
               <div className="mt-3 text-xs leading-5 text-[#666]">
-                {backupPreview.data.experience.length} roles, {backupPreview.data.projects.length} projects,
-                template {backupPreview.config.template}.
+                {t.backupSummary(
+                  backupPreview.data.experience.length,
+                  backupPreview.data.projects.length,
+                  backupPreview.config.template
+                )}
               </div>
               <button
                 type="button"
@@ -258,7 +265,7 @@ export function ResumeImportPanel({
                 className="mt-4 flex w-full items-center justify-center gap-2 bg-[#1A1A1A] py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-white transition-colors hover:bg-black"
               >
                 <Check size={14} />
-                Restore Backup
+                {t.restoreBackup}
               </button>
             </div>
           )}

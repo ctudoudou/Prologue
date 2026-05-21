@@ -56,7 +56,7 @@ export interface ResumeConfig {
   themeColor: string;
   fontFamily: string;
   template: 'modern' | 'classic' | 'minimal' | 'creative' | 'professional';
-  language: 'en' | 'zh';
+  language: 'en' | 'zh' | 'ja' | 'ko';
   showIcons: boolean;
   sectionTitles: {
     summary: string;
