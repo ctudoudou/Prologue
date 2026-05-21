@@ -17,12 +17,14 @@ The project is built as a Next.js application and is designed to run locally or 
 ## Features
 
 - Live resume editor with sections for personal details, summary, experience, education, projects, and skills.
-- Real-time A4 resume preview with print/PDF export support.
+- Real-time A4 resume preview with browser print and server-rendered PDF export support.
 - Multiple resume templates: modern, minimal, classic, creative, and professional.
 - Theme color, typography, language, icon visibility, section title, and section visibility controls.
 - Markdown editing for long-form resume content.
 - Custom personal information fields and optional hidden contact fields.
-- AI-powered resume text enhancement through a server-side Gemini API route.
+- OpenAI-compatible AI text enhancement through OpenAI or OpenRouter.
+- AI-assisted Markdown and PDF resume import with preview before replacing the current resume.
+- Versioned JSON backup and restore that works locally without an AI key.
 - Responsive layout with mobile edit/preview switching and desktop side-by-side workflow.
 
 ## Tech Stack
@@ -32,8 +34,9 @@ The project is built as a Next.js application and is designed to run locally or 
 - **Language:** TypeScript
 - **Icons:** lucide-react
 - **Markdown Rendering:** react-markdown
-- **Print Export:** react-to-print
-- **AI Integration:** @google/genai through a Next.js API route
+- **Print Export:** react-to-print, Playwright for Node PDF streaming
+- **AI Integration:** OpenAI-compatible chat completions through Next.js API routes
+- **Resume Import:** pdf-parse for PDF text extraction
 - **Testing:** Vitest, Testing Library, jsdom
 - **Tooling:** ESLint 9, PostCSS, npm
 
@@ -43,7 +46,7 @@ The project is built as a Next.js application and is designed to run locally or 
 
 - Node.js
 - npm
-- A Gemini API key for AI enhancement features
+- Optional OpenAI or OpenRouter API key for AI enhancement and AI import features
 
 ### Installation
 
@@ -51,16 +54,14 @@ The project is built as a Next.js application and is designed to run locally or 
 npm install
 ```
 
-### Environment Variables
+### AI Provider Setup
 
-Create a `.env.local` file and configure:
+Open the editor, go to **Design / AI Service**, choose OpenAI or OpenRouter, and enter an API key and model name. The key is stored only in browser `sessionStorage` under `prologue.aiConfig.v1`; it is sent to the server only for the current request and is never stored by the app.
 
-```bash
-GEMINI_API_KEY="your-gemini-api-key"
-APP_URL="http://localhost:3000"
-```
+Default model values:
 
-`GEMINI_API_KEY` is required for the `/api/enhance` endpoint. The application keeps this key on the server side and does not expose it to client components.
+- OpenAI: `gpt-4.1-mini`
+- OpenRouter: `openai/gpt-4.1-mini`
 
 ### Development
 
@@ -83,11 +84,15 @@ npm run start
 - `npm run build`: create a production build.
 - `npm run start`: start the production server.
 - `npm run lint`: run ESLint.
+- `npm run test`: run Vitest.
 - `npm run clean`: run the configured Next.js clean command.
 
-## AI Enhancement
+## AI Workflows
 
-Prologue uses a server-side API route at `app/api/enhance/route.ts` to enhance resume text. The endpoint accepts resume content and a field type, builds a focused prompt, and returns improved copy as JSON.
+Prologue uses server-side API routes for AI work while keeping provider credentials session-only in the browser:
+
+- `app/api/enhance/route.ts`: enhances summaries and experience descriptions.
+- `app/api/import/resume/route.ts`: extracts Markdown/PDF resume text and asks the configured AI provider to return strict `ResumeData` JSON.
 
 Current enhancement targets include:
 
@@ -95,7 +100,20 @@ Current enhancement targets include:
 - Experience descriptions
 - General resume text
 
-The AI layer is intentionally isolated from the client so secrets remain server-side.
+AI import always shows a summary preview before replacing the current resume. API keys and resume file contents are treated as transient request data; the app does not log or persist them.
+
+## Import And Backup
+
+- Markdown import supports `.md` and `.markdown` files.
+- PDF import supports `.pdf` files and extracts text server-side before AI parsing.
+- JSON export downloads `{ version: 1, exportedAt, data, config }`.
+- JSON import validates the backup version, resume data, and resume config, then previews before restore.
+
+## PDF Export
+
+The editor keeps the browser print export as the universal fallback. The **PDF** button calls `app/api/export/pdf/route.ts`, which uses a Node runtime and Playwright to stream `application/pdf` bytes with a download filename.
+
+This route requires a Node/Chromium-capable deployment. Cloudflare Worker deployments should keep using browser print unless you attach a separate Node PDF service.
 
 ## License
 

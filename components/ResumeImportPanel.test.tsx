@@ -3,6 +3,7 @@ import type { ComponentProps } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ResumeImportPanel } from './ResumeImportPanel';
 import type { AiConfig } from '@/lib/ai-config';
+import { createResumeBackup } from '@/lib/resume-backup';
 import type { ResumeConfig, ResumeData } from '@/types/resume';
 
 const aiConfig: AiConfig = {
@@ -113,5 +114,35 @@ describe('ResumeImportPanel', () => {
 
     expect(screen.getByText(/add an api key/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /parse/i })).toBeDisabled();
+  });
+
+  it('previews and restores a JSON backup without fetch', async () => {
+    const onRestore = vi.fn();
+    renderPanel({ onRestore });
+
+    const backup = createResumeBackup(
+      {
+        ...parsedData,
+        personalInfo: { ...parsedData.personalInfo, name: 'Restored User' },
+      },
+      { ...config, template: 'professional' }
+    );
+    const file = new File([JSON.stringify(backup)], 'backup.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(screen.getByLabelText(/import json/i), {
+      target: { files: [file] },
+    });
+
+    await waitFor(() => expect(screen.getByText('Restored User')).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: /restore backup/i }));
+
+    expect(onRestore).toHaveBeenCalledWith(
+      expect.objectContaining({
+        personalInfo: expect.objectContaining({ name: 'Restored User' }),
+      }),
+      expect.objectContaining({ template: 'professional' })
+    );
   });
 });
