@@ -13,7 +13,7 @@ import {
 } from '@/lib/ai-config';
 import { detectBrowserLanguage } from '@/lib/language';
 import { ResumeData, ResumeConfig } from '@/types/resume';
-import { Eye, Edit2, FileUp } from 'lucide-react';
+import { Download, Eye, Edit2, FileUp, Printer } from 'lucide-react';
 
 const initialData: ResumeData = {
   personalInfo: {
@@ -125,6 +125,7 @@ export default function ResumeBuilder() {
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
   const [activeNav, setActiveNav] = useState('design');
   const [showImportPanel, setShowImportPanel] = useState(false);
+  const [isCloudExporting, setIsCloudExporting] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const [landingLanguage, setLandingLanguage] = useState<ResumeConfig['language']>(() => {
     if (typeof navigator === 'undefined') return 'en';
@@ -145,6 +146,33 @@ export default function ResumeBuilder() {
       sectionTitles: sectionTitlesByLanguage[landingLanguage],
     }));
     setShowLanding(false);
+  };
+
+  const exportServerPdf = async () => {
+    setIsCloudExporting(true);
+    try {
+      const response = await fetch('/api/export/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data, config }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Server PDF export failed');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'resume.pdf';
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      reactToPrintFn();
+    } finally {
+      setIsCloudExporting(false);
+    }
   };
 
   if (showLanding) {
@@ -246,11 +274,20 @@ export default function ResumeBuilder() {
           >
             <FileUp size={14} /> Import
           </button>
-          <button 
+          <button
+            type="button"
             onClick={() => reactToPrintFn()}
-            className="flex-1 py-3 bg-[#1A1A1A] text-white text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-black transition-colors"
+            className="flex-1 py-3 border border-black text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-[#1A1A1A] hover:text-white transition-colors flex items-center justify-center gap-2"
           >
-            Export PDF
+            <Printer size={14} /> Print
+          </button>
+          <button
+            type="button"
+            onClick={exportServerPdf}
+            disabled={isCloudExporting}
+            className="flex-1 py-3 bg-[#1A1A1A] text-white text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-black transition-colors disabled:bg-[#D9D9D3] flex items-center justify-center gap-2"
+          >
+            <Download size={14} /> {isCloudExporting ? 'Exporting' : 'PDF'}
           </button>
         </footer>
       </aside>
