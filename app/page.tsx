@@ -227,7 +227,13 @@ export default function ResumeBuilder() {
         {showImportPanel && (
           <ResumeImportPanel
             aiConfig={aiConfig}
+            data={data}
+            config={config}
             onApply={setData}
+            onRestore={(nextData, nextConfig) => {
+              setData(nextData);
+              setConfig(nextConfig);
+            }}
             onClose={() => setShowImportPanel(false)}
           />
         )}

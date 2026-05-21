@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import type { ComponentProps } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ResumeImportPanel } from './ResumeImportPanel';
 import type { AiConfig } from '@/lib/ai-config';
-import type { ResumeData } from '@/types/resume';
+import type { ResumeConfig, ResumeData } from '@/types/resume';
 
 const aiConfig: AiConfig = {
   provider: 'openai',
@@ -28,6 +29,42 @@ const parsedData: ResumeData = {
   skills: 'TypeScript, React',
 };
 
+const config: ResumeConfig = {
+  themeColor: '#1A1A1A',
+  fontFamily: 'font-sans',
+  template: 'modern',
+  language: 'en',
+  showIcons: false,
+  sectionTitles: {
+    summary: 'Profile',
+    experience: 'Experience',
+    education: 'Education',
+    projects: 'Projects',
+    skills: 'Skills',
+  },
+  visibleSections: {
+    summary: true,
+    experience: true,
+    education: true,
+    projects: true,
+    skills: true,
+  },
+};
+
+function renderPanel(props: Partial<ComponentProps<typeof ResumeImportPanel>> = {}) {
+  return render(
+    <ResumeImportPanel
+      aiConfig={aiConfig}
+      data={parsedData}
+      config={config}
+      onApply={vi.fn()}
+      onRestore={vi.fn()}
+      onClose={vi.fn()}
+      {...props}
+    />
+  );
+}
+
 describe('ResumeImportPanel', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -52,7 +89,7 @@ describe('ResumeImportPanel', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<ResumeImportPanel aiConfig={aiConfig} onApply={onApply} onClose={onClose} />);
+    renderPanel({ onApply, onClose });
 
     const file = new File(['# Jane Doe'], 'resume.md', { type: 'text/markdown' });
     fireEvent.change(screen.getByLabelText(/choose/i), {
@@ -72,13 +109,7 @@ describe('ResumeImportPanel', () => {
   });
 
   it('requires an API key before parsing', () => {
-    render(
-      <ResumeImportPanel
-        aiConfig={{ ...aiConfig, apiKey: '' }}
-        onApply={vi.fn()}
-        onClose={vi.fn()}
-      />
-    );
+    renderPanel({ aiConfig: { ...aiConfig, apiKey: '' } });
 
     expect(screen.getByText(/add an api key/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /parse/i })).toBeDisabled();

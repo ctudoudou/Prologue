@@ -1,7 +1,12 @@
 import { useRef, useState } from 'react';
 import { Check, FileUp, Loader2, X } from 'lucide-react';
 import type { AiConfig } from '@/lib/ai-config';
-import type { ResumeData } from '@/types/resume';
+import {
+  createResumeBackup,
+  parseResumeBackupText,
+  type ResumeBackup,
+} from '@/lib/resume-backup';
+import type { ResumeConfig, ResumeData } from '@/types/resume';
 import type { ResumeImportSummary } from '@/lib/resume-import';
 
 interface ImportPreview {
@@ -11,15 +16,28 @@ interface ImportPreview {
 
 interface ResumeImportPanelProps {
   aiConfig: AiConfig;
+  data: ResumeData;
+  config: ResumeConfig;
   onApply: (data: ResumeData) => void;
+  onRestore: (data: ResumeData, config: ResumeConfig) => void;
   onClose: () => void;
 }
 
-export function ResumeImportPanel({ aiConfig, onApply, onClose }: ResumeImportPanelProps) {
+export function ResumeImportPanel({
+  aiConfig,
+  data,
+  config,
+  onApply,
+  onRestore,
+  onClose,
+}: ResumeImportPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const backupInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<ImportPreview | null>(null);
+  const [backupPreview, setBackupPreview] = useState<ResumeBackup | null>(null);
   const [error, setError] = useState('');
+  const [backupError, setBackupError] = useState('');
   const [isImporting, setIsImporting] = useState(false);
 
   const canImport = Boolean(file && aiConfig.apiKey.trim() && !isImporting);
@@ -61,6 +79,38 @@ export function ResumeImportPanel({ aiConfig, onApply, onClose }: ResumeImportPa
     setPreview(null);
     setFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const exportBackup = () => {
+    const backup = createResumeBackup(data, config);
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `prologue-resume-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importBackup = async (fileToImport: File | null) => {
+    setBackupPreview(null);
+    setBackupError('');
+    if (!fileToImport) return;
+
+    const parsed = parseResumeBackupText(await fileToImport.text());
+    if (!parsed.ok) {
+      setBackupError(parsed.error);
+      return;
+    }
+
+    setBackupPreview(parsed.backup);
+  };
+
+  const applyBackup = () => {
+    if (!backupPreview) return;
+    onRestore(backupPreview.data, backupPreview.config);
+    setBackupPreview(null);
+    if (backupInputRef.current) backupInputRef.current.value = '';
   };
 
   return (
@@ -158,6 +208,60 @@ export function ResumeImportPanel({ aiConfig, onApply, onClose }: ResumeImportPa
             <Check size={14} />
             Apply
           </button>
+        </div>
+
+        <div className="mt-3 border-t border-[#F0F0EB] pt-5">
+          <h3 className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#1A1A1A]">
+            JSON Backup
+          </h3>
+          <p className="mt-2 text-xs leading-5 text-[#666]">
+            Export a portable backup or restore one without using AI.
+          </p>
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={exportBackup}
+              className="border border-black py-3 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors hover:bg-[#1A1A1A] hover:text-white"
+            >
+              Export JSON
+            </button>
+            <label className="cursor-pointer border border-[#E5E5E0] py-3 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-[#555] transition-colors hover:border-black hover:text-black">
+              Import JSON
+              <input
+                ref={backupInputRef}
+                type="file"
+                accept=".json,application/json"
+                className="sr-only"
+                onChange={event => void importBackup(event.target.files?.[0] ?? null)}
+              />
+            </label>
+          </div>
+
+          {backupError && <p className="mt-3 text-xs leading-5 text-red-600">{backupError}</p>}
+
+          {backupPreview && (
+            <div className="mt-4 border border-[#E5E5E0] bg-[#F9F9F7] p-4">
+              <div className="text-sm font-semibold text-[#1A1A1A]">
+                {backupPreview.data.personalInfo.name || 'Untitled candidate'}
+              </div>
+              <div className="mt-1 text-xs text-[#666]">
+                Backup from {new Date(backupPreview.exportedAt).toLocaleString()}
+              </div>
+              <div className="mt-3 text-xs leading-5 text-[#666]">
+                {backupPreview.data.experience.length} roles, {backupPreview.data.projects.length} projects,
+                template {backupPreview.config.template}.
+              </div>
+              <button
+                type="button"
+                onClick={applyBackup}
+                className="mt-4 flex w-full items-center justify-center gap-2 bg-[#1A1A1A] py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-white transition-colors hover:bg-black"
+              >
+                <Check size={14} />
+                Restore Backup
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>
