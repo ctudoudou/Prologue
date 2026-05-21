@@ -5,6 +5,7 @@ import { useReactToPrint } from 'react-to-print';
 import { FormSection } from '@/components/FormSection';
 import { LandingPage } from '@/components/LandingPage';
 import { PreviewSection } from '@/components/PreviewSection';
+import { ResumeImportPanel } from '@/components/ResumeImportPanel';
 import {
   type AiConfig,
   loadSessionAiConfig,
@@ -12,7 +13,7 @@ import {
 } from '@/lib/ai-config';
 import { detectBrowserLanguage } from '@/lib/language';
 import { ResumeData, ResumeConfig } from '@/types/resume';
-import { Eye, Edit2 } from 'lucide-react';
+import { Eye, Edit2, FileUp } from 'lucide-react';
 
 const initialData: ResumeData = {
   personalInfo: {
@@ -123,6 +124,7 @@ export default function ResumeBuilder() {
   });
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
   const [activeNav, setActiveNav] = useState('design');
+  const [showImportPanel, setShowImportPanel] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const [landingLanguage, setLandingLanguage] = useState<ResumeConfig['language']>(() => {
     if (typeof navigator === 'undefined') return 'en';
@@ -222,8 +224,22 @@ export default function ResumeBuilder() {
           </div>
         </div>
 
+        {showImportPanel && (
+          <ResumeImportPanel
+            aiConfig={aiConfig}
+            onApply={setData}
+            onClose={() => setShowImportPanel(false)}
+          />
+        )}
+
         <footer className="p-4 md:p-6 bg-[#F9F9F7] border-t border-[#F0F0EB] flex gap-3 shrink-0">
-          <button className="flex-1 py-3 border border-black text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-[#1A1A1A] hover:text-white transition-colors">Share</button>
+          <button
+            type="button"
+            onClick={() => setShowImportPanel(current => !current)}
+            className="flex-1 py-3 border border-black text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-[#1A1A1A] hover:text-white transition-colors flex items-center justify-center gap-2"
+          >
+            <FileUp size={14} /> Import
+          </button>
           <button 
             onClick={() => reactToPrintFn()}
             className="flex-1 py-3 bg-[#1A1A1A] text-white text-[10px] md:text-[11px] uppercase tracking-[0.15em] font-bold hover:bg-black transition-colors"
